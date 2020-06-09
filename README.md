@@ -4,4 +4,4 @@ It works by messaging a bot the username(s) of (a) player(s) or inviting the bot
 
 Please note that this project is heavily under development so there isn't even a beta yet.
 
-For more information please visit https://fatdubs.gitbook.io/hypixel-stats/
+For more information please visit https://hystats.dubs.rip
