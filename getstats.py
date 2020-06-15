@@ -524,10 +524,10 @@ def getTkrStats(player):
     else:
         laps = 0
     
-    if "wins" in data:
-        wins = data["wins"]
-    else:
-        wins = 0
+    # if "wins" in data:
+    #     wins = data["wins"]
+    # else:
+    #     wins = 0
     
     if "gold_trophy" in data:
         gold = data["gold_trophy"]
@@ -544,10 +544,10 @@ def getTkrStats(player):
     else:
         bronze = 0
     
-    if "box_pickups" in data:
-        boxes = data["box_pickups"]
-    else:
-        boxes = 0
+    # if "box_pickups" in data:
+    #     boxes = data["box_pickups"]
+    # else:
+    #     boxes = 0
     
     if "banana_hits_sent" in data:
         sent = data["banana_hits_sent"]
@@ -562,11 +562,11 @@ def getTkrStats(player):
         br = 0
 
     out["laps"] = laps
-    out["wins"] = wins
+    # out["wins"] = wins
     out["gold_trophies"] = gold
     out["silver_trophies"] = silver
     out["bronze_trophies"] = bronze
-    out["powerups"] = boxes
+    # out["powerups"] = boxes
     out["banana_ratio"] = br
 
     return out
