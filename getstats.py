@@ -35,11 +35,14 @@ def int_to_Roman(num):
     return roman_num
 
 def getOverallStats(player):
-    exp = player["networkExp"]
-    level = round(getLevel(exp),2)
-    karma = player["karma"]
-    ap = player["achievementPoints"]
-    quests = player["achievements"]["general_quest_master"]
+    try: 
+        exp = player["networkExp"]
+        level = round(getLevel(exp),2)
+        karma = player["karma"]
+        ap = player["achievementPoints"]
+        quests = player["achievements"]["general_quest_master"]
+    except:
+        return None
 
     out = {}
     out["level"] = level
@@ -50,7 +53,8 @@ def getOverallStats(player):
 
 def getBwStats(player,mode):
     mode = mode[-1]
-    data = player["stats"]["Bedwars"]
+    try: data = player["stats"]["Bedwars"]
+    except: return None
     level = player["achievements"]["bedwars_level"]
     out = {}
 
@@ -329,7 +333,8 @@ def getBwStats(player,mode):
 
 def getSwStats(player,mode):
     mode = mode[-1]
-    data = player["stats"]["SkyWars"]
+    try: data = player["stats"]["SkyWars"]
+    except: return None
     level = getSwLevel(data["skywars_experience"])
     out = {}
 
@@ -508,7 +513,8 @@ def getSwStats(player,mode):
     return out
 
 def getTkrStats(player):
-    data = player["stats"]["GingerBread"]
+    try: data = player["stats"]["GingerBread"]
+    except: return None
     out = {}
 
     if "laps_completed" in data:
@@ -565,7 +571,8 @@ def getTkrStats(player):
 
 def getDuelStats(player,mode):
     mode = mode[-1]
-    data = player["stats"]["Duels"]
+    try: data = player["stats"]["Duels"]
+    except: return None
     out = {}
 
     # overall
@@ -592,6 +599,11 @@ def getDuelStats(player,mode):
             winstreak = data["current_winstreak"]
         else:
             winstreak = 0
+        
+        if "best_overall_winstreak" in data:
+            bestws = data["best_overall_winstreak"]
+        else:
+            bestws = 0
 
         if "kills" in data:
             kills = data["kills"]
@@ -841,14 +853,14 @@ def getDuelStats(player,mode):
     out["prestige"] = prestige
     out["kd"] = kd
     out["ws"] = winstreak
-    try: out["bestws"] = bestws
-    except Exception: pass
+    out["bestws"] = bestws
     out["wr"] = wr
 
     return out
 
 def getPitStats(player):
-    data = player["stats"]["Pit"]["pit_stats_ptl"]
+    try: data = player["stats"]["Pit"]["pit_stats_ptl"]
+    except: return None
     out = {}
 
     if "kills" in data:
