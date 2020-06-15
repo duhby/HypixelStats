@@ -335,9 +335,11 @@ def getBwStats(player,mode):
 
 def getSwStats(player,mode):
     mode = mode[-1]
-    try: data = player["stats"]["SkyWars"]
-    except: return None
-    level = getSwLevel(data["skywars_experience"])
+    try: 
+        data = player["stats"]["SkyWars"]
+        level = round(getSwLevel(data["skywars_experience"]),1)
+    except: 
+        return None
     out = {}
 
     if "win_streak" in data:
