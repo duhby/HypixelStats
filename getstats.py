@@ -53,9 +53,11 @@ def getOverallStats(player):
 
 def getBwStats(player,mode):
     mode = mode[-1]
-    try: data = player["stats"]["Bedwars"]
-    except: return None
-    level = player["achievements"]["bedwars_level"]
+    try: 
+        data = player["stats"]["Bedwars"]
+        level = player["achievements"]["bedwars_level"]
+    except: 
+        return None
     out = {}
 
     # overall
@@ -507,8 +509,8 @@ def getSwStats(player,mode):
 
     out["level"] = level
     out["kd"] = kd
-    out["ws"] = winstreak
     out["wr"] = wr
+    out["ws"] = winstreak
 
     return out
 
