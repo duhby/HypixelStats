@@ -865,6 +865,11 @@ def getPitStats(player):
     except: return None
     out = {}
 
+    if "pit_prestiges" in player["achievements"]:
+        prestige = int_to_Roman(player["achievements"]["pit_prestiges"])
+    else:
+        prestige = "None"
+
     if "kills" in data:
         kills = data["kills"]
     else:
@@ -882,6 +887,7 @@ def getPitStats(player):
     else:
         highest_streak = 0
 
+    out["prestige"] = prestige
     out["kd"] = kd
     out["max_streak"] = highest_streak
 
