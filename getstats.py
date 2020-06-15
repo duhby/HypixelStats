@@ -325,8 +325,8 @@ def getBwStats(player,mode):
 
     out["level"] = level
     out["fkdr"] = fkdr
-    out["ws"] = winstreak
     out["wr"] = wr
+    out["ws"] = winstreak
     out["bblr"] = bblr
 
     return out
