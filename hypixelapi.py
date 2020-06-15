@@ -64,7 +64,6 @@ def getPlayer(username,mode):
         return {}
 
 def convert(data,mode="oa"):
-    # {'username': 'FatDubs', 'stats': {'level': 111.75, 'karma': 6487215, 'ap': 3395, 'quests': 910}}
     try:
         username = data["username"]
         stats = data["stats"]
@@ -140,5 +139,4 @@ def convert(data,mode="oa"):
         return {"main":main,"mode":mode}
 
     except Exception as error:
-        return(error)
         return {"main":"Something went wrong!, please try again in a bit!","mode":"Null"}
