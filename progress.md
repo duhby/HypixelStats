@@ -4,7 +4,7 @@
 * [x] getstats.py
 * [x] hypixelapi.py
 * [x] msgformat.py
-* [ ] main.py 40% complete
+* [ ] main.py 90% complete \(bugfixing\)
 
 
 
