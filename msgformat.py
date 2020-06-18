@@ -1,7 +1,7 @@
 import random
 
 #==============[SETTINGS]==============
-announcement = "[aight]"
+announcement = ""
 partyMax = 8
 #======================================
 
@@ -24,43 +24,47 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         yield(l[i:i+n])
 
-def spaces(msg,n):
-    for i in range(n):
-        msg = " " + msg
-    return msg
-
 def discordmsg():
     return "/w _stats +discord"
 
-def discord_request(verifyCode):
+def discord_request():
     pack = []
     link = "Discord; https://discord.gg/g3PPN5Y - "
-    pack.append(insertNoBreak(spaces("Your verification code is " + str(verifyCode),14)))
-    pack.append(insertNoBreak("send the code in the verify channel within 2 minutes!"))
+    pack.append(insertNoBreak("Yes thanks ok join the discord now"))
     return link + insertInvis(" ".join(pack))
 
+## TODO - make this relevant
+# def discord_request(verifyCode):
+#     pack = []
+#     link = "Discord; https://discord.gg/g3PPN5Y - "
+#     pack.append(insertNoBreak(spaces("Your verification code is " + str(verifyCode),14)))
+#     pack.append(insertNoBreak("send the code in the verify channel within 2 minutes!"))
+#     return link + insertInvis(" ".join(pack))
+
 def msg(raw):
-    modeLabel = f"{raw['mode']}"
+    modeLabel = f"[{raw['mode']}]"
     pack = []
     pack.append("Made with <3 from FatDubs") # if you change this you suck and I will personally make sure you get banned from Hypixel Stats
-    pack.append(discordmsg())
+    # pack.append(discordmsg())
     pack.append(f"{modeLabel:-^51}")
     pack.append(insertNoBreak(raw["main"]))
     pack.append(f"{announcement:-^51}")
     return insertInvis(" ".join(pack))
 
-def party(raws):
+def party(raws,mode):
     blocks = chunks(raws,4)
+    mode = displaymode(mode)
+    yield f"Made with <3 from FatDubs" # if you change this you suck and I will personally make sure you get banned from Hypixel Stats
+    yield f"[{mode}]"
     for block in blocks:
         pack = []
-        pack.append("Made with <3 from FatDubs") # if you change this you suck and I will personally make sure you get banned from Hypixel Stats
-        pack.append(f'[{modeDisplay[mode]}]')
+        pack.append("                  ")
         for line in block: pack.append(insertNoBreak(line))
         yield insertInvis(" ".join(pack))
     if announcement != "":
-        yield(announcement)
+        yield announcement
 
-def wrongSyntax():
+def wrong_syntax():
     pack = []
     pack.append(discordmsg())
     pack.append(insertNoBreak("use '/msg _stats username' for overall stats"))
@@ -74,13 +78,20 @@ def party_too_large():
     return insertInvis(" ".join(pack))
 
 def party_mode(mode):
-    try: moden = int(mode[-1])
+    mode = displaymode(mode)
+
+    return insertInvis(insertNoBreak(f"Got it! Next time you invite me I will show {mode} stats."))
+
+# converts code into display (ex. duels1 --> DUELS SUMO)
+def displaymode(mode):
+    try:
+        moden = int(mode[-1])
     except: pass
 
     if "oa" in mode:
         mode = "OVERALL"
     elif "bw" in mode:
-        modeDisplay = ["OVERALL","SOLOS","DOUBLES","3v3v3v3","4v4v4v4"]
+        modeDisplay = ["OVERALL","SOLOS","DOUBLES","3v3v3v3","4v4v4v4","4v4"]
         mode = "BEDWARS " + modeDisplay[moden]
     elif "sw" in mode:
         modeDisplay = ["OVERALL","SOLO NORMAL","SOLO INSANE","TEAM NORMAL","TEAM INSANE","RANKED"]
@@ -93,4 +104,4 @@ def party_mode(mode):
     elif "pit" in mode:
         mode = "PIT"
 
-    return insertInvis(insertNoBreak(f"Got it! Next time you invite me I will show {mode} stats."))
+    return mode
