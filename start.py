@@ -1,10 +1,11 @@
 # This file is run to start the program
-import main    # main project file
+import main   # main project file
 import getpass # allows password to be hidden during input
 
 email = input('email: ')
-password = getpass.getpass('password: ')
+password = getpass.getpass('password: ') # password is hidden while typing
 username = input('bot ign: ')
+rate = input('rate (msgs per minute): ')
 
-bot = start.thread(email,password,username)
+bot = main.thread(email,password,username,rate)
 bot.start()
