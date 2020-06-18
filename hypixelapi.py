@@ -3,8 +3,8 @@ import requests
 import getstats
 
 #================[SETTINGS]================
-keys = ["e973092a-e353-4842-a8cd-09e69ffbeefb",
-        "d66d46a8-31a9-4f03-a470-65ed0498c06e"]
+keys = ["e973092a-YOUR-KEY-HERE-09e69ffbeefb",
+        "d66d46a8-YOUR-KEY-HERE-65ed0498c06e"]
 
 api_timeout = 5 # in seconds
 #==========================================
