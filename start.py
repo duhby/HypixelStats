@@ -1,9 +1,9 @@
-# This file is run to start the program
-import main   # main project file
-import getpass # allows password to be hidden during input
+# Run this file to start the program
+import main     # main project file
+import getpass  # allows password to be hidden during input
 
 email = input('email: ')
-password = getpass.getpass('password: ') # password is hidden while typing
+password = getpass.getpass('password: ')
 username = input('bot ign: ')
 rate = input('rate (msgs per minute): ')
 
