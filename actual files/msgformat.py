@@ -25,27 +25,28 @@ def chunks(l, n):
         yield(l[i:i+n])
 
 def discordmsg():
-    return "/w _stats +discord"
+    return "'/w _stats +discord' for a list of online bots!"
 
 def discord_request():
+    link = "Discord; https://discord.gg/g3PPN5Y"
     pack = []
-    link = "Discord; https://discord.gg/g3PPN5Y - "
-    pack.append(insertNoBreak("Yes thanks ok join the discord now"))
+    pack.append(insertNoBreak("Type .verify {username} in the #verify channel"))
     return link + insertInvis(" ".join(pack))
+    
 
-## TODO - make this relevant
-# def discord_request(verifyCode):
-#     pack = []
-#     link = "Discord; https://discord.gg/g3PPN5Y - "
-#     pack.append(insertNoBreak(spaces("Your verification code is " + str(verifyCode),14)))
-#     pack.append(insertNoBreak("send the code in the verify channel within 2 minutes!"))
-#     return link + insertInvis(" ".join(pack))
+
+def discord_request(verifyCode):
+    pack = []
+    link = "Discord; https://discord.gg/g3PPN5Y"
+    pack.append(insertNoBreak(f"Your verification code is {verifyCode}"))
+    pack.append(insertNoBreak("send the code in the verify channel within 2 minutes!"))
+    return link + insertInvis(" ".join(pack))
 
 def msg(raw):
     modeLabel = f"[{raw['mode']}]"
     pack = []
     pack.append("Made with <3 from FatDubs") # if you change this you suck and I will personally make sure you get banned from Hypixel Stats
-    # pack.append(discordmsg())
+    pack.append(insertNoBreak(discordmsg()))
     pack.append(f"{modeLabel:-^51}")
     pack.append(insertNoBreak(raw["main"]))
     pack.append(f"{announcement:-^51}")
@@ -55,6 +56,8 @@ def party(raws,mode):
     blocks = chunks(raws,4)
     mode = displaymode(mode)
     yield f"Made with <3 from FatDubs" # if you change this you suck and I will personally make sure you get banned from Hypixel Stats
+    if random.randint(0,1) == 1:
+        yield discordmsg()
     yield f"[{mode}]"
     for block in blocks:
         pack = []
