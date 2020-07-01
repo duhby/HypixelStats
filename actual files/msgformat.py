@@ -1,7 +1,7 @@
 import random
 
 #==============[SETTINGS]==============
-announcement = ""
+announcement = "[bruh]"
 partyMax = 8
 #======================================
 
@@ -31,15 +31,6 @@ def discord_request():
     link = "Discord; https://discord.gg/g3PPN5Y"
     pack = []
     pack.append(insertNoBreak("Type .verify {username} in the #verify channel"))
-    return link + insertInvis(" ".join(pack))
-    
-
-
-def discord_request(verifyCode):
-    pack = []
-    link = "Discord; https://discord.gg/g3PPN5Y"
-    pack.append(insertNoBreak(f"Your verification code is {verifyCode}"))
-    pack.append(insertNoBreak("send the code in the verify channel within 2 minutes!"))
     return link + insertInvis(" ".join(pack))
 
 def msg(raw):
