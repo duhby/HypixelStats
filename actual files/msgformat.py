@@ -28,7 +28,7 @@ def discordmsg():
     return "'/w _stats +discord' for a full list of features!"
 
 def discord_request():
-    link = "Discord; https://discord.gg/g3PPN5Y                "
+    link = "Discord; https://discord.gg/PtsBc4b                "
     pack = []
     pack.append(insertNoBreak("Type !verify {username} in the #verify channel"))
     return link + insertInvis(" ".join(pack))
