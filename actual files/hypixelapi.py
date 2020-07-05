@@ -43,12 +43,12 @@ def getPlayer(username,mode):
     try:
         response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout)
     except Exception:
-        logging.info("API Timeout!")
+        logging.warning("API Timeout! (hypixel)")
         return {}
     try:
         player = response.json()
         if not player["success"]:
-            logging.info("Key error: " + str(apikey))
+            logging.warning("Key error: " + str(apikey))
             return {}
 
         player = player["player"]
