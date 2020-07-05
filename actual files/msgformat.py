@@ -1,7 +1,7 @@
 import random
 
 #==============[SETTINGS]==============
-announcement = "[bruh]"
+announcement = ""
 partyMax = 8
 #======================================
 
@@ -25,18 +25,31 @@ def chunks(l, n):
         yield(l[i:i+n])
 
 def discordmsg():
-    return "'/w _stats +discord' for a list of online bots!"
+    return "'/w _stats +discord' for a full list of features!"
 
 def discord_request():
-    link = "Discord; https://discord.gg/g3PPN5Y"
+    link = "Discord; https://discord.gg/g3PPN5Y                "
     pack = []
-    pack.append(insertNoBreak("Type .verify {username} in the #verify channel"))
+    pack.append(insertNoBreak("Type !verify {username} in the #verify channel"))
     return link + insertInvis(" ".join(pack))
+
+def sniper(data,player):
+    sniper = data["sniper"]
+    reports = data["report"]
+    label = f"[{player}]"
+    sniper = data["sniper"]
+    reports = data["report"]
+    pack = []
+    pack.append("Made with <3 from FatDubs") # Changing this is illegal and unethical so don't or there will be consequences.
+    pack.append(f"{label:-^51}")
+    pack.append(insertNoBreak(f"Is sniper: {sniper}     Reports: {reports}"))
+    pack.append(f"{announcement:-^51}")
+    return insertInvis(" ".join(pack))
 
 def msg(raw):
     modeLabel = f"[{raw['mode']}]"
     pack = []
-    pack.append("Made with <3 from FatDubs") # if you change this you suck and I will personally make sure you get banned from Hypixel Stats
+    pack.append("Made with <3 from FatDubs") # Changing this is illegal and unethical so don't or there will be consequences.
     pack.append(insertNoBreak(discordmsg()))
     pack.append(f"{modeLabel:-^51}")
     pack.append(insertNoBreak(raw["main"]))
@@ -46,7 +59,7 @@ def msg(raw):
 def party(raws,mode):
     blocks = chunks(raws,4)
     mode = displaymode(mode)
-    yield f"Made with <3 from FatDubs" # if you change this you suck and I will personally make sure you get banned from Hypixel Stats
+    yield f"Made with <3 from FatDubs" # Changing this is illegal and unethical so don't or there will be consequences.
     if random.randint(0,1) == 1:
         yield discordmsg()
     yield f"[{mode}]"
