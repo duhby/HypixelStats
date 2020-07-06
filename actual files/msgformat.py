@@ -40,7 +40,7 @@ def sniper(data,player):
     sniper = data["sniper"]
     reports = data["report"]
     pack = []
-    pack.append("Made with <3 from FatDubs") # Changing this is illegal and unethical so don't or there will be consequences.
+    pack.append("Made with <3 from FatDubs and MinuteBrain") # Changing this is illegal and unethical so don't or there will be consequences.
     pack.append(f"{label:-^51}")
     pack.append(insertNoBreak(f"Is sniper: {sniper}     Reports: {reports}"))
     pack.append(f"{announcement:-^51}")
@@ -49,7 +49,7 @@ def sniper(data,player):
 def msg(raw):
     modeLabel = f"[{raw['mode']}]"
     pack = []
-    pack.append("Made with <3 from FatDubs") # Changing this is illegal and unethical so don't or there will be consequences.
+    pack.append("Made with <3 from FatDubs and MinuteBrain") # Changing this is illegal and unethical so don't or there will be consequences.
     pack.append(insertNoBreak(discordmsg()))
     pack.append(f"{modeLabel:-^51}")
     pack.append(insertNoBreak(raw["main"]))
@@ -59,7 +59,7 @@ def msg(raw):
 def party(raws,mode):
     blocks = chunks(raws,4)
     mode = displaymode(mode)
-    yield f"Made with <3 from FatDubs" # Changing this is illegal and unethical so don't or there will be consequences.
+    yield f"Made with <3 from FatDubs and MinuteBrain" # Changing this is illegal and unethical so don't or there will be consequences.
     if random.randint(0,1) == 1:
         yield discordmsg()
     yield f"[{mode}]"
