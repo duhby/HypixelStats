@@ -499,11 +499,14 @@ class bot:
             # api by minutebrain and reza
             elif currentQueue["msgMode"] == "sniper":
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
+                self.chat("/r",0)
                 data = currentQueue["data"]
                 player = currentQueue["player"]
                 user = currentQueue["user"]
+                utils.increment_dict(self.quotaChange,user,1)
+                msg = msgformat.sniper(data,player)
                 logging.info(f"Sniper Check: {user} --> {player}")
-                self.chat("/r " + msgformat.sniper(data,player))
+                self.chat(msg,0.4)
 
             elif currentQueue["msgMode"] == "wrong_syntax":
                 logging.info(f"Wrong Syntax: {currentQueue['user']}")
