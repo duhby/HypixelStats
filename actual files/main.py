@@ -470,7 +470,7 @@ class bot:
                 data = hypixelapi.getPlayer(username,mode)
                 raw = hypixelapi.convert(data,mode)
                 msg = msgformat.msg(raw)
-                logging.info(f"Stats: {replyTo} --> {username}")
+                logging.info(f"{mode} Stats: {replyTo} --> {username}")
                 self.chat(msg,0.4)
 
             ## NOT CURRENTLY SUPPORTED
