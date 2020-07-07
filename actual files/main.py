@@ -175,7 +175,8 @@ class bot:
 
     def limbo(self):
         logging.info("Warp to Limbo")
-        for _ in range(20): self.chat("/golimbo",0.1,True)
+        self.chat(chr(167))
+        self.chat("/whereami")
 
     # sends a chat packet to the server
     def chat(self,text,delay=0.7,bypass=False):
