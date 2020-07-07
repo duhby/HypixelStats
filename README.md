@@ -4,4 +4,4 @@ Hypixel Stats is a project that allows players to more easily use the hypixel ap
 
 ## IMPORTANT
 
-The project is now released, however I recomend you join my discord https://discord.gg/PtsBc4b before trying to run the program
+The project is now released, however I recomend you join my discord https://discord.gg/PtsBc4b before trying to run the program because you'll probably need some assistance. 
