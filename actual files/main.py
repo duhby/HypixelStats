@@ -247,15 +247,16 @@ class bot:
                         leader = msg[msg.index(":")+1:].split("●") # retreive player
                         leader = leader[0].split()[-1] # remove rank
                         self.leader_buffer = leader
+                        self.mods_buffer = []
                         # leader = 'FatDubs'
 
                     # on party moderator list return
                     elif "Party Moderators" in chat_raw and "●" in chat_raw:
-                        # Party Moderators: [MVP++] Sneakndestroy ● [YOUTUBE] gamerboy80 ●
+                        # Party Moderators: [MVP++] Sneaak ● [YOUTUBE] gamerboy80 ●
                         mods = [mods for mods in msg[msg.index(":")+1:].split("●") if len(mods)>1] # if statement removes "list out of range" error
                         mods = [mods.split()[-1] for mods in mods] # removes ranks
                         self.mods_buffer = mods
-                        # mods = ['Sneakndestroy', 'gamerboy80']
+                        # mods = ['Sneaak', 'gamerboy80']
 
                     elif "Party Members" in chat_raw and "●" in chat_raw:
                         # Party Members: [VIP] MinuteBrain ● hystats_ ●
