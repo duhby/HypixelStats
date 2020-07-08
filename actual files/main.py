@@ -70,7 +70,7 @@ class utils:
         msg = msg.replace("+ ","+").replace("++","+").replace("+]","]")
         return msg
     
-    # used for combining dictionaries for quota and verified users
+    # used for combining dictionaries for users and requests
     def combine_dict(one,two):
         for key in list(two):
             utils.increment_dict(one,key,two[key])
