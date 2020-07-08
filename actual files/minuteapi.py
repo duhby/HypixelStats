@@ -11,8 +11,8 @@ import logging # used for logging
 # sets logging config to file and console
 logging.basicConfig(
     level    = logging.INFO,
-    format   = "%(asctime)s [%(levelname)s] %(message)s",
-    datefmt  = '%m/%d/%Y %I:%M:%S %p',
+    format   = "[%(asctime)s] [%(levelname)s] %(message)s",
+    datefmt  = '%I:%M:%S %p',
     handlers = [
         logging.StreamHandler(),
         logging.handlers.TimedRotatingFileHandler("logs/_stats.log", when = "midnight", interval = 1)
