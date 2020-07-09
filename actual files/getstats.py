@@ -1,7 +1,7 @@
 from math import sqrt
 
 def getLevel(exp):
-    return (sqrt(exp + 15312.5) - 125 / sqrt(2)) / (25*sqrt(2))
+    return sqrt(exp + 15312.5) - 125 / sqrt(2)) / (25*sqrt(2)
 
 def getSwLevel(exp):
     xps = [0, 20, 70, 150, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000]
