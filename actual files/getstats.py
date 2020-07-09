@@ -12,27 +12,17 @@ def getSwLevel(exp):
             if exp < xps[i]:
                 return i + float(exp - xps[i-1]) / (xps[i] - xps[i-1])
 
-def int_to_Roman(num):
-    val = [
-        1000, 900, 500, 400,
-        100, 90, 50, 40,
-        10, 9, 5, 4,
-        1
-        ]
-    syb = [
-        "M", "CM", "D", "CD",
-        "C", "XC", "L", "XL",
-        "X", "IX", "V", "IV",
-        "I"
-        ]
-    roman_num = ''
+def roman(n):
+    val = [10, 9, 5, 4, 1]
+    syb = ["X", "IX", "V", "IV", "I"]
+    rom = ""
     i = 0
-    while  num > 0:
-        for _ in range(num // val[i]):
-            roman_num += syb[i]
+    while n > 0:
+        for _ in range(n // val[i]):
+            rom += syb[i]
             num -= val[i]
-        i += 1
-    return roman_num
+        i ÷= 1
+    return rom
 
 def getOverallStats(player):
     try: 
@@ -583,21 +573,21 @@ def getDuelStats(player,mode):
     if mode == "0":       
         prestige = "Null"
         if "all_modes_rookie_title_prestige" in data:
-            prestige = "Rookie " + int_to_Roman(data["all_modes_rookie_title_prestige"])
+            prestige = "Rookie " + roman(data["all_modes_rookie_title_prestige"])
         if "all_modes_iron_title_prestige" in data:
-            prestige = "Iron " + int_to_Roman(data["all_modes_iron_title_prestige"])
+            prestige = "Iron " + roman(data["all_modes_iron_title_prestige"])
         if "all_modes_gold_title_prestige" in data:
-            prestige = "Gold " + int_to_Roman(data["all_modes_gold_title_prestige"])
+            prestige = "Gold " + roman(data["all_modes_gold_title_prestige"])
         if "all_modes_diamond_title_prestige" in data:
-            prestige = "Diamond " + int_to_Roman(data["all_modes_diamond_title_prestige"])
+            prestige = "Diamond " + roman(data["all_modes_diamond_title_prestige"])
         if "all_modes_master_title_prestige" in data:
-            prestige = "Master " + int_to_Roman(data["all_modes_master_title_prestige"])
+            prestige = "Master " + roman(data["all_modes_master_title_prestige"])
         if "all_modes_legend_title_prestige" in data:
-            prestige = "Legend  " + int_to_Roman(data["all_modes_legend_title_prestige"])
+            prestige = "Legend  " + roman(data["all_modes_legend_title_prestige"])
         if "all_modes_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + int_to_Roman(data["all_modes_grandmaster_title_prestige"])
+            prestige = "GrandMaster " + roman(data["all_modes_grandmaster_title_prestige"])
         if "all_modes_godlike_title_prestige" in data:
-            prestige = "GodLike " + int_to_Roman(data["all_modes_godlike_title_prestige"])
+            prestige = "GodLike " + roman(data["all_modes_godlike_title_prestige"])
 
         if "current_winstreak" in data:
             winstreak = data["current_winstreak"]
@@ -638,21 +628,21 @@ def getDuelStats(player,mode):
     if mode == "1":
         prestige = "Null"
         if "sumo_rookie_title_prestige" in data:
-            prestige = "Rookie " + int_to_Roman(data["sumo_rookie_title_prestige"])
+            prestige = "Rookie " + roman(data["sumo_rookie_title_prestige"])
         if "sumo_iron_title_prestige" in data:
-            prestige = "Iron " + int_to_Roman(data["sumo_iron_title_prestige"])
+            prestige = "Iron " + roman(data["sumo_iron_title_prestige"])
         if "sumo_gold_title_prestige" in data:
-            prestige = "Gold " + int_to_Roman(data["sumo_gold_title_prestige"])
+            prestige = "Gold " + roman(data["sumo_gold_title_prestige"])
         if "sumo_diamond_title_prestige" in data:
-            prestige = "Diamond " + int_to_Roman(data["sumo_diamond_title_prestige"])
+            prestige = "Diamond " + roman(data["sumo_diamond_title_prestige"])
         if "sumo_master_title_prestige" in data:
-            prestige = "Master " + int_to_Roman(data["sumo_master_title_prestige"])
+            prestige = "Master " + roman(data["sumo_master_title_prestige"])
         if "sumo_legend_title_prestige" in data:
-            prestige = "Legend  " + int_to_Roman(data["sumo_legend_title_prestige"])
+            prestige = "Legend  " + roman(data["sumo_legend_title_prestige"])
         if "sumo_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + int_to_Roman(data["sumo_grandmaster_title_prestige"])
+            prestige = "GrandMaster " + roman(data["sumo_grandmaster_title_prestige"])
         if "sumo_godlike_title_prestige" in data:
-            prestige = "GodLike " + int_to_Roman(data["sumo_godlike_title_prestige"])
+            prestige = "GodLike " + roman(data["sumo_godlike_title_prestige"])
 
         if "current_sumo_winstreak" in data:
             winstreak = data["current_sumo_winstreak"]
@@ -693,21 +683,21 @@ def getDuelStats(player,mode):
     if mode == "2":
         prestige = "Null"
         if "uhc_rookie_title_prestige" in data:
-            prestige = "Rookie " + int_to_Roman(data["uhc_rookie_title_prestige"])
+            prestige = "Rookie " + roman(data["uhc_rookie_title_prestige"])
         if "uhc_iron_title_prestige" in data:
-            prestige = "Iron " + int_to_Roman(data["uhc_iron_title_prestige"])
+            prestige = "Iron " + roman(data["uhc_iron_title_prestige"])
         if "uhc_gold_title_prestige" in data:
-            prestige = "Gold " + int_to_Roman(data["uhc_gold_title_prestige"])
+            prestige = "Gold " + roman(data["uhc_gold_title_prestige"])
         if "uhc_diamond_title_prestige" in data:
-            prestige = "Diamond " + int_to_Roman(data["uhc_diamond_title_prestige"])
+            prestige = "Diamond " + roman(data["uhc_diamond_title_prestige"])
         if "uhc_master_title_prestige" in data:
-            prestige = "Master " + int_to_Roman(data["uhc_master_title_prestige"])
+            prestige = "Master " + roman(data["uhc_master_title_prestige"])
         if "uhc_legend_title_prestige" in data:
-            prestige = "Legend  " + int_to_Roman(data["uhc_legend_title_prestige"])
+            prestige = "Legend  " + roman(data["uhc_legend_title_prestige"])
         if "uhc_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + int_to_Roman(data["uhc_grandmaster_title_prestige"])
+            prestige = "GrandMaster " + roman(data["uhc_grandmaster_title_prestige"])
         if "uhc_godlike_title_prestige" in data:
-            prestige = "GodLike " + int_to_Roman(data["uhc_godlike_title_prestige"])
+            prestige = "GodLike " + roman(data["uhc_godlike_title_prestige"])
 
         if "current_uhc_winstreak" in data:
             winstreak = data["current_uhc_winstreak"]
@@ -748,21 +738,21 @@ def getDuelStats(player,mode):
     if mode == "3":
         prestige = "Null"
         if "bridge_rookie_title_prestige" in data:
-            prestige = "Rookie " + int_to_Roman(data["bridge_rookie_title_prestige"])
+            prestige = "Rookie " + roman(data["bridge_rookie_title_prestige"])
         if "bridge_iron_title_prestige" in data:
-            prestige = "Iron " + int_to_Roman(data["bridge_iron_title_prestige"])
+            prestige = "Iron " + roman(data["bridge_iron_title_prestige"])
         if "bridge_gold_title_prestige" in data:
-            prestige = "Gold " + int_to_Roman(data["bridge_gold_title_prestige"])
+            prestige = "Gold " + roman(data["bridge_gold_title_prestige"])
         if "bridge_diamond_title_prestige" in data:
-            prestige = "Diamond " + int_to_Roman(data["bridge_diamond_title_prestige"])
+            prestige = "Diamond " + roman(data["bridge_diamond_title_prestige"])
         if "bridge_master_title_prestige" in data:
-            prestige = "Master " + int_to_Roman(data["bridge_master_title_prestige"])
+            prestige = "Master " + roman(data["bridge_master_title_prestige"])
         if "bridge_legend_title_prestige" in data:
-            prestige = "Legend  " + int_to_Roman(data["bridge_legend_title_prestige"])
+            prestige = "Legend  " + roman(data["bridge_legend_title_prestige"])
         if "bridge_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + int_to_Roman(data["bridge_grandmaster_title_prestige"])
+            prestige = "GrandMaster " + roman(data["bridge_grandmaster_title_prestige"])
         if "bridge_godlike_title_prestige" in data:
-            prestige = "GodLike " + int_to_Roman(data["bridge_godlike_title_prestige"])
+            prestige = "GodLike " + roman(data["bridge_godlike_title_prestige"])
 
         if "current_bridge_winstreak" in data:
             winstreak = data["current_bridge_winstreak"]
@@ -803,21 +793,21 @@ def getDuelStats(player,mode):
     if mode == "4":
         prestige = "Null"
         if "classic_rookie_title_prestige" in data:
-            prestige = "Rookie " + int_to_Roman(data["classic_rookie_title_prestige"])
+            prestige = "Rookie " + roman(data["classic_rookie_title_prestige"])
         if "classic_iron_title_prestige" in data:
-            prestige = "Iron " + int_to_Roman(data["classic_iron_title_prestige"])
+            prestige = "Iron " + roman(data["classic_iron_title_prestige"])
         if "classic_gold_title_prestige" in data:
-            prestige = "Gold " + int_to_Roman(data["classic_gold_title_prestige"])
+            prestige = "Gold " + roman(data["classic_gold_title_prestige"])
         if "classic_diamond_title_prestige" in data:
-            prestige = "Diamond " + int_to_Roman(data["classic_diamond_title_prestige"])
+            prestige = "Diamond " + roman(data["classic_diamond_title_prestige"])
         if "classic_master_title_prestige" in data:
-            prestige = "Master " + int_to_Roman(data["classic_master_title_prestige"])
+            prestige = "Master " + roman(data["classic_master_title_prestige"])
         if "classic_legend_title_prestige" in data:
-            prestige = "Legend  " + int_to_Roman(data["classic_legend_title_prestige"])
+            prestige = "Legend  " + roman(data["classic_legend_title_prestige"])
         if "classic_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + int_to_Roman(data["classic_grandmaster_title_prestige"])
+            prestige = "GrandMaster " + roman(data["classic_grandmaster_title_prestige"])
         if "classic_godlike_title_prestige" in data:
-            prestige = "GodLike " + int_to_Roman(data["classic_godlike_title_prestige"])
+            prestige = "GodLike " + roman(data["classic_godlike_title_prestige"])
 
         if "current_classic_winstreak" in data:
             winstreak = data["current_classic_winstreak"]
@@ -868,7 +858,7 @@ def getPitStats(player):
     out = {}
 
     if "pit_prestiges" in player["achievements"]:
-        prestige = int_to_Roman(player["achievements"]["pit_prestiges"])
+        prestige = roman(player["achievements"]["pit_prestiges"])
     else:
         prestige = "None"
 
