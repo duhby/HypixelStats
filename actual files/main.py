@@ -231,7 +231,7 @@ class bot:
                         for data in chat_json["extra"]:
                             if "/party accept" in str(data):
                                 user = data["clickEvent"]["value"].split()[-1]
-                                if self.cooldowncheck(user,5) and user not in self.ops: return # if user has cooldown level of 6 or more
+                                if self.cooldowncheck(user,5): return # if user has cooldown level of 6 or more
                                 self.partyQueue.append({"mode":"queue","user":user})
                                 return
                         return
@@ -278,7 +278,7 @@ class bot:
                         for data in chat_json["extra"]:
                             if "/f accept " in str(data).lower():
                                 user = data["clickEvent"]["value"].split()[-1]
-                                if self.cooldowncheck(user,2) and user not in self.ops: return
+                                if self.cooldowncheck(user,2): return
                                 self.commandQueue.append({"command":"friend_request","user":user})
                                 return
                         return
@@ -398,7 +398,7 @@ class bot:
         # extra = ['fatdubs', 'gamerboy80']
         # mode = 'tkr'
 
-        if self.cooldowncheck(user,1) and user not in self.ops: return # cooldown
+        if self.cooldowncheck(user,1): return # cooldown
 
         # commands
         if "+" in msg:
