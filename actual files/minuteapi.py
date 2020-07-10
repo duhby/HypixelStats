@@ -25,7 +25,7 @@ def isSniper(player):
         response = json.loads(response.text)
         player = response["name"]
     except:
-        print("API Timeout! (mojang)")
+        logging.error("API Timeout! (mojang)")
     try:
         response = requests.get(f"http://161.35.53.44:8080/?playerv3={player}",timeout=api_timeout)
         text = response.text
@@ -34,5 +34,5 @@ def isSniper(player):
         text = json.loads(text)
         return text
     except:
-        print("API Timeout! (minutebrain)")
+        logging.error("API Timeout! (minutebrain)")
     return False
