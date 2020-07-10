@@ -4,5 +4,5 @@ Hypixel Stats is a project that allows players to more easily use the hypixel ap
 
 ## IMPORTANT
 
-documentation: https://hystats.dubs.rip
-discord: https://discord.gg/PtsBc4b
+documentation: [https://hystats.dubs.rip](https://hystats.dubs.rip) discord: [https://discord.gg/PtsBc4b](https://discord.gg/PtsBc4b)
+

@@ -5,6 +5,6 @@
 ## tutorial
 
 * [Tutorial](tutorial/tutorial/README.md)
-  * [\[Modes\]](tutorial/tutorial/modes.md)
   * [\[Commands\]](tutorial/tutorial/commands.md)
+  * [\[Modes\]](tutorial/tutorial/modes.md)
 
