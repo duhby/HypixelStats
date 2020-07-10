@@ -21,7 +21,6 @@ logging.basicConfig(
 )
 
 def isSniper(player):
-    player = mojangapi.correctCaps(player)
     try:
         response = requests.get(f"http://161.35.53.44:8080/?playerv3={player}",timeout=api_timeout)
         text = response.text
