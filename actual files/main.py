@@ -133,7 +133,7 @@ class bot:
         self.player_cooldown = {}  # holds the cooldown time for players
         self.info_delay = time.time()      # info will be shown every 60 seconds
         self.cooldown_timer = time.time()  # starts the cooldown timer
-        self.file_delay = time.time()      # files will update every 30 seconds
+        self.file_delay = time.time()      # files will update every 120 seconds
         # self.heartbeat = time.time()       # starts the heartbeat timer
         # self.heartbeat_cooldown = time.time()  # makes sure the bot doesn't send multiple messages to itself (due to lag)
         self.last_connection = time.time() # holds timestamp for keep_alive_packet (heartbeat replacement)
@@ -628,7 +628,7 @@ class bot:
             self.current_load = 0
 
     def file_tick(self):
-        if time.time() - self.file_delay > 30:
+        if time.time() - self.file_delay > 120:
             self.file_delay = time.time()
             self.quota = utils.load_obj("quota")
             utils.combine_dict(self.quota,self.quotaChange)
