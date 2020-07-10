@@ -1,6 +1,7 @@
 import json
 import requests
 import getstats
+import mojangapi
 
 #================[SETTINGS]================
 keys = ["e973092a-YOUR-KEY-HERE-09e69ffbeefb",
@@ -37,6 +38,20 @@ def nextKey():
     global n
     n += 1
     return keys[n%len(keys)]
+
+def isFriended(username,bot):
+    uuid = mojangapi.getUUID(bot)
+    apikey = nextKey()
+    username = mojangapi.getUUID(username)
+    try:
+        friends = requests.get(f"https://api.hypixel.net/friends?key={apikey}&uuid={uuid}",timeout=api_timeout).json()
+    except Exception:
+        logging.error("API Timeout! (hypixel)")
+        return False
+    if username in str(friends):
+        return True
+    else:
+        return False
 
 def getPlayer(username,mode):
     apikey = nextKey()
