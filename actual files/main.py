@@ -1,8 +1,8 @@
 # Main project file
 
 # files
-import hypixelapi # grabs data from the hypixel api
-import minuteapi # grabs data from minutebrain and reza's sniper api
+from apis import hypixelapi # grabs data from the hypixel api
+from apis import minuteapi  # grabs data from minutebrain and reza's sniper api
 import msgformat # self explanatory
 
 # PyCraft imports for minecraft related processes
