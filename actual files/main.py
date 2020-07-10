@@ -23,7 +23,7 @@ logging.basicConfig(
     datefmt  = '%I:%M:%S %p',
     handlers = [
         logging.StreamHandler(),
-        logging.handlers.TimedRotatingFileHandler("logs/bot.log", when = "midnight", interval = 1)
+        logging.handlers.TimedRotatingFileHandler("logs/_stats.log", when = "midnight", interval = 1)
     ]
 )
 
@@ -69,7 +69,7 @@ class utils:
         msg = " ".join(msg.split()) # removes double space
         msg = msg.replace("+ ","+").replace("++","+").replace("+]","]")
         return msg
-    
+
     # used for combining dictionaries for users and requests
     def combine_dict(one,two):
         for key in list(two):
@@ -117,7 +117,7 @@ class bot:
 
         # validates credentials and connects to hypixel
         try: self.auth_token.authenticate(self.email,self.password)
-        except YggdrasilError as error: 
+        except YggdrasilError as error:
             logging.warning(error)
             sys.exit()
         logging.info(f'Logged in as {self.email}.')
@@ -172,10 +172,11 @@ class bot:
         time.sleep(0.5)
         self.chat("/p leave")
         logging.info('Connected.')
+        self.limbo()
 
     def limbo(self):
         logging.info("Warp to Limbo")
-        self.chat(chr(167))
+        self.chat("/"+chr(167))
         self.chat("/whereami")
 
     # sends a chat packet to the server
@@ -222,92 +223,87 @@ class bot:
                         self.unmute_time = time.time() + self.mute_duration
                         self.limbo()
 
-                # if there is more than one format of chat on a single line
-                if "extra" in chat_json:
-                    logging.debug(msg)
-                    # on party request
-                    if "/party accept" in chat_raw:
-                        # retreives the user that sent the invitation
-                        for data in chat_json["extra"]:
-                            if "/party accept" in str(data):
-                                user = data["clickEvent"]["value"].split()[-1]
-                                if self.cooldowncheck(user,5): return # if user has cooldown level of 6 or more
-                                self.partyQueue.append({"mode":"queue","user":user})
-                                return
-                        return
+                logging.debug(msg)
+                # on party request
+                if "/party accept" in chat_raw:
+                    # retreives the user that sent the invitation
+                    for data in chat_json["extra"]:
+                        if "/party accept" in str(data):
+                            user = data["clickEvent"]["value"].split()[-1]
+                            if self.cooldowncheck(user,5): return # if user has cooldown level of 6 or more
+                            self.partyQueue.append({"mode":"queue","user":user})
+                            return
+                    return
 
-                    # on heartbeat
-                    elif "HeartBeat-KeepAlive" in chat_raw and "from" not in chat_raw.lower() and self.username in chat_raw:
-                        self.heartbeat = time.time()
-                        return
+                # on heartbeat
+                elif "HeartBeat-KeepAlive" in chat_raw and "from" not in chat_raw.lower() and self.username in chat_raw:
+                    self.heartbeat = time.time()
+                    return
 
-                    # on party leader return
-                    elif "Party Leader" in chat_raw and "●" in chat_raw:
-                        # msg = Party Leader: [MVP+] FatDubs ●
-                        leader = msg[msg.index(":")+1:].split("●") # retreive player
-                        leader = leader[0].split()[-1] # remove rank
-                        self.leader_buffer = leader
-                        self.mods_buffer = []
-                        # leader = 'FatDubs'
+                # on party leader return
+                elif "Party Leader" in chat_raw and "●" in chat_raw:
+                    # msg = Party Leader: [MVP+] FatDubs ●
+                    leader = msg[msg.index(":")+1:].split("●") # retreive player
+                    leader = leader[0].split()[-1] # remove rank
+                    self.leader_buffer = leader
+                    self.mods_buffer = []
+                    # leader = 'FatDubs'
 
-                    # on party moderator list return
-                    elif "Party Moderators" in chat_raw and "●" in chat_raw:
-                        # Party Moderators: [MVP++] Sneaak ● [YOUTUBE] gamerboy80 ●
-                        mods = [mods for mods in msg[msg.index(":")+1:].split("●") if len(mods)>1] # if statement removes "list out of range" error
-                        mods = [mods.split()[-1] for mods in mods] # removes ranks
-                        self.mods_buffer = mods
-                        # mods = ['Sneaak', 'gamerboy80']
+                # on party moderator list return
+                elif "Party Moderators" in chat_raw and "●" in chat_raw:
+                    # Party Moderators: [MVP++] Sneaak ● [YOUTUBE] gamerboy80 ●
+                    mods = [mods for mods in msg[msg.index(":")+1:].split("●") if len(mods)>1] # if statement removes "list out of range" error
+                    mods = [mods.split()[-1] for mods in mods] # removes ranks
+                    self.mods_buffer = mods
+                    # mods = ['Sneaak', 'gamerboy80']
 
-                    elif "Party Members" in chat_raw and "●" in chat_raw:
-                        # Party Members: [VIP] MinuteBrain ● hystats_ ●
-                        users = [user for user in msg[msg.index(":")+1:].split("●") if len(user)>1] # if statement removes "list out of range" error
-                        users = [user.split()[-1] for user in users] # removes ranks
-                        users.remove(self.username) # removes bot from the list
-                        users.append(self.leader_buffer)
-                        users.extend(self.mods_buffer)
-                        self.partyQueue = [{"mode":"list","user":users}] + self.partyQueue # puts ontop of the queue
-                        return
+                elif "Party Members" in chat_raw and "●" in chat_raw:
+                    # Party Members: [VIP] MinuteBrain ● hystats_ ●
+                    users = [user for user in msg[msg.index(":")+1:].split("●") if len(user)>1] # if statement removes "list out of range" error
+                    users = [user.split()[-1] for user in users] # removes ranks
+                    users.remove(self.username) # removes bot from the list
+                    users.append(self.leader_buffer)
+                    users.extend(self.mods_buffer)
+                    self.partyQueue = [{"mode":"list","user":users}] + self.partyQueue # puts ontop of the queue
+                    return
 
-                    # on msg request
-                    elif ("From" in chat_raw) and ("light_purple" in chat_raw) and (self.username not in chat_raw):
-                        self.chat_msg(msg)
-                        return
+                # on msg request
+                elif ("From" in chat_raw) and ("light_purple" in chat_raw) and (self.username not in chat_raw):
+                    self.chat_msg(msg)
+                    return
 
-                    # on friend request
-                    elif ("Click to" in chat_raw) and ("/f accept " in chat_raw):
-                        for data in chat_json["extra"]:
-                            if "/f accept " in str(data).lower():
-                                user = data["clickEvent"]["value"].split()[-1]
-                                if self.cooldowncheck(user,2): return
-                                self.commandQueue.append({"command":"friend_request","user":user})
-                                return
-                        return
+                # on friend request
+                elif ("Click to" in chat_raw) and ("/f accept " in chat_raw):
+                    for data in chat_json["extra"]:
+                        if "/f accept " in str(data).lower():
+                            user = data["clickEvent"]["value"].split()[-1]
+                            if self.cooldowncheck(user,2): return
+                            self.commandQueue.append({"command":"friend_request","user":user})
+                            return
+                    return
 
-                    # on queue
-                    elif ("The games starts in" in chat_raw) or ("has joined" in msg and "/" in msg) or ("has quit" in msg and "/" in msg) or ("Party Leader," in chat_raw and "yellow" in chat_raw):
-                        if not self.inQueue:
-                            self.inQueue = True
-                            logging.info(str(self.inParty["from"]) + "summoned you to their server")
-                            self.cooldowncheck(self.inParty["from"],60) # adds them to the blacklist for 6 minutes
-                            self.inParty["in"] = True
-                            self.inParty["timestamp"] = time.time()+9999
-                            self.chat("/p leave",1,True)
-                            self.chat("/l",0.7,True)
-                            self.limbo()
-                            self.inParty["in"] = False
-                            self.inParty["timestamp"] = time.time()+5
-                            self.inQueue = False
-                        return
+                # on queue
+                elif ("The games starts in" in chat_raw) or ("has joined" in msg and "/" in msg) or ("has quit" in msg and "/" in msg) or ("Party Leader," in chat_raw and "yellow" in chat_raw):
+                    if not self.inQueue:
+                        self.inQueue = True
+                        logging.info(str(self.inParty["from"]) + "summoned you to their server")
+                        self.cooldowncheck(self.inParty["from"],60) # adds them to the blacklist for 6 minutes
+                        self.inParty["in"] = True
+                        self.inParty["timestamp"] = time.time()+9999
+                        self.chat("/p leave",1,True)
+                        self.chat("/l",0.7,True)
+                        self.limbo()
+                        self.inParty["in"] = False
+                        self.inParty["timestamp"] = time.time()+5
+                        self.inQueue = False
+                    return
 
-                    # on whereami respond
-                    elif "You are currently" in msg and "aqua" in chat_raw:
-                        logging.info(msg)
-                        if "limbo" not in msg:
-                            self.limbo()
+                # on whereami respond
+                elif "You are currently" in msg and "aqua" in chat_raw:
+                    logging.info(msg)
+                    if "limbo" not in msg:
+                        self.limbo()
 
-            # while muted
-            else:
-                self.botsChange += {self.username:{"muted":True,"load":0}}
         except Exception as error:
             logging.warning("Chat handle error! " + str(error))
 
@@ -414,7 +410,7 @@ class bot:
             elif cmd in ["+pmode","+setpartymode"]:
                 self.party_config[user] = mode
                 self.msgQueue = [{"msgMode":"party_mode","user":user,"mode":mode}] + self.msgQueue
-            
+
             elif cmd == "+discord":
                 self.msgQueue = [{"msgMode":"discord_request","user":user}]
 
@@ -512,12 +508,12 @@ class bot:
                 logging.info(f"Wrong Syntax: {currentQueue['user']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.wrong_syntax(),0.5)
-            
+
             elif currentQueue["msgMode"] == "party_mode":
                 logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.party_mode(currentQueue["mode"]),0.5)
-            
+
     def party_tick(self):
         if len(self.partyQueue) > 0 and len(self.msgQueue) == 0:
             currentQueue = self.partyQueue.pop(0)
@@ -553,12 +549,12 @@ class bot:
                         time.sleep(0.05)
                     self.chat("/p leave")
                     self.inParty["in"] = False
-        if self.inParty["in"] and time.time()-self.inParty["timestamp"] > 2:
-            logging.info("Party timeout!" + str(self.inParty["from"]))
+        if self.inParty["in"] and time.time()-self.inParty["timestamp"] > 3:
+            logging.info("Party timeout! " + str(self.inParty["from"]))
             while time.time()-self.command_delay < 0.8: time.sleep(0.05)
             self.chat("/p leave",0.3)
             self.inParty["in"] = False
-    
+
     def command_tick(self):
         if len(self.commandQueue) > 0:
             currentQueue = self.commandQueue.pop(0)
@@ -567,22 +563,22 @@ class bot:
                 logging.info(f"Friend accepted - {currentQueue['user']}")
                 while time.time()-self.command_delay < 0.7: time.sleep(0.05)
                 self.chat(f"/f accept {currentQueue['user']}",0.3)
-            
+
             elif currentQueue["command"] == "send_command":
                 logging.info(f"Command sent - {currentQueue['send']}")
                 while time.time()-self.command_delay < 0.7: time.sleep(0.05)
                 self.chat(currentQueue["send"],0.3,True)
-    
+
     def heartbeat_tick(self):
         if time.time()-self.heartbeat > 610:
             self.connection.disconnect(True)
             raise Exception("No heartbeat detect!")
             return
-        
+
         if time.time()-self.heartbeat > 120:
             self.connection.connect()
             logging.info("Reconnecting..")
-        
+
         if time.time()-self.heartbeat > 60 and time.time()-self.heartbeat_cooldown > 30:
             heartbeat_length = time.time()-self.heartbeat
             random_msg = "".join([chr(random.randint(64,125)) for _ in range(30)])
@@ -605,7 +601,7 @@ class bot:
 
             logging.info(f"Heartbeat ({int(heartbeat_length)}sec)")
             return
-    
+
     def tick(self):
         self.heartbeat_tick()
         try:
