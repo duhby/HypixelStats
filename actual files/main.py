@@ -9,7 +9,7 @@ import msgformat # self explanatory
 from minecraft import authentication as auth
 from minecraft.exceptions import YggdrasilError # login error
 from minecraft.networking.connection import Connection
-from minecraft.networking.packets import Packet, clientbound, serverbound
+from minecraft.networking.packets import Packet, clientbound, serverbound, keep_alive_packet
 from minecraft.compat import input
 
 # logging
@@ -33,7 +33,7 @@ import time    # used for cooldown
 import pickle  # used to write and read files
 import sys     # used for the sys.exit() function
 import json    # used to grab chat data from packets
-import random  # used to randomize heartbeat messages
+import random  # used to randomize things
 
 # class for utilities that are used frequently
 # and would be messy if used in the main class
@@ -131,9 +131,13 @@ class bot:
         self.inParty = {"in":False,"from":"","timestamp":0}
         self.party_config = {}     # holds the data for players' party settings when they do +pmode
         self.player_cooldown = {}  # holds the cooldown time for players
+        self.info_delay = time.time()      # info will be shown every 60 seconds
         self.cooldown_timer = time.time()  # starts the cooldown timer
-        self.heartbeat = time.time()       # starts the heartbeat timer
-        self.heartbeat_cooldown = time.time()  # makes sure the bot doesn't send multiple messages to itself (due to lag)
+        self.file_delay = time.time()      # files will update every 30 seconds
+        # self.heartbeat = time.time()       # starts the heartbeat timer
+        # self.heartbeat_cooldown = time.time()  # makes sure the bot doesn't send multiple messages to itself (due to lag)
+        self.last_connection = time.time() # holds timestamp for keep_alive_packet (heartbeat replacement)
+        self.login_attempt = 0   # how many attempts the bot tries to login
         self.muted = False       # returns a boolean if the bot is muted
         self.mute_duration = 0   # holds the mute duration of the bot
         self.unmute_time = 0     # holds a timer until a bot is muted according to time.time()
@@ -161,23 +165,26 @@ class bot:
         self.connection.disconnect(True)
         sys.exit()
 
-    # connects to the server using packets and stuff idk
+    # registers packet listeners for communication
     def initialize(self):
         self.connection.register_packet_listener(self.handle_join_game, clientbound.play.JoinGamePacket)
         self.connection.register_packet_listener(self.handle_chat, clientbound.play.ChatMessagePacket)
+        self.connection.register_packet_listener(self.handle_keep_alive, keep_alive_packet.AbstractKeepAlivePacket)
         self.connection.connect()
 
-    # handles heartbeat and party on game join
+    # handles what happens when the bot joins the game
     def handle_join_game(self,packet):
         time.sleep(0.5)
         self.chat("/p leave")
         logging.info('Connected.')
         self.limbo()
 
+    def handle_keep_alive(self,packet):
+        self.last_connection = time.time()
+
     def limbo(self):
         logging.info("Warp to Limbo")
-        self.chat("/"+chr(167))
-        self.chat("/whereami")
+        self.commandQueue.append({"command":"limbo","send":"/"+chr(167)})
 
     # sends a chat packet to the server
     def chat(self,text,delay=0.7,bypass=False):
@@ -235,10 +242,10 @@ class bot:
                             return
                     return
 
-                # on heartbeat
-                elif "HeartBeat-KeepAlive" in chat_raw and "from" not in chat_raw.lower() and self.username in chat_raw:
-                    self.heartbeat = time.time()
-                    return
+                # # on heartbeat
+                # elif "HeartBeat-KeepAlive" in chat_raw and "from" not in chat_raw.lower() and self.username in chat_raw:
+                #     self.heartbeat = time.time()
+                #     return
 
                 # on party leader return
                 elif "Party Leader" in chat_raw and "●" in chat_raw:
@@ -286,7 +293,7 @@ class bot:
                 elif ("The games starts in" in chat_raw) or ("has joined" in msg and "/" in msg) or ("has quit" in msg and "/" in msg) or ("Party Leader," in chat_raw and "yellow" in chat_raw):
                     if not self.inQueue:
                         self.inQueue = True
-                        logging.info(str(self.inParty["from"]) + "summoned you to their server")
+                        logging.info(str(self.inParty["from"]) + " summoned you to their server")
                         self.cooldowncheck(self.inParty["from"],60) # adds them to the blacklist for 6 minutes
                         self.inParty["in"] = True
                         self.inParty["timestamp"] = time.time()+9999
@@ -569,103 +576,103 @@ class bot:
                 while time.time()-self.command_delay < 0.7: time.sleep(0.05)
                 self.chat(currentQueue["send"],0.3,True)
 
-    def heartbeat_tick(self):
-        if time.time()-self.heartbeat > 610:
-            self.connection.disconnect(True)
-            raise Exception("No heartbeat detect!")
-            return
+            elif currentQueue["command"] == "limbo":
+                while time.time()-self.command_delay < 0.7: time.sleep(0.05)
+                self.chat(currentQueue["send"],True)
+                self.chat("/whereami",True)
 
-        if time.time()-self.heartbeat > 120:
-            self.connection.connect()
-            logging.info("Reconnecting..")
+    # def heartbeat_tick(self):
+        # if time.time()-self.heartbeat > 610:
+        #     self.connection.disconnect(True)
+        #     raise Exception("No heartbeat detect!")
+        #     return
+        #
+        # if time.time()-self.heartbeat > 120:
+        #     self.connection.connect()
+        #     logging.info("Reconnecting..")
+        #
+        # if time.time()-self.heartbeat > 60 and time.time()-self.heartbeat_cooldown > 30:
+        #     heartbeat_length = time.time()-self.heartbeat
+        #     random_msg = "".join([chr(random.randint(64,125)) for _ in range(30)])
+        #     while time.time()-self.command_delay < 0.5: time.sleep(0.7)
+        #     self.chat(f"/msg {self.username} HeartBeat-KeepAlive {random_msg}",0.3) # sends a random message to the bot to make sure it's running / connected
+        #     self.heartbeat_cooldown = time.time()
+        #     self.chat("/whereami",0.2)
+        #
+        #     self.quota = utils.load_obj("quota")
+        #     utils.combine_dict(self.quota,self.quotaChange)
+        #     utils.save_obj(self.quota,"quota")
+        #     self.quotaChange = {}
+        #
+        #     load = round((self.current_load/self.rate)*100)
+        #     if self.current_load > self.rate:
+        #         logging.info("Overloaded!")
+        #     else:
+        #         logging.info(f"Bot Load peaked at {load}%.")
+        #     self.current_load = 0
+        #
+        #     logging.info(f"Heartbeat ({int(heartbeat_length)}sec)")
+        #     return
 
-        if time.time()-self.heartbeat > 60 and time.time()-self.heartbeat_cooldown > 30:
-            heartbeat_length = time.time()-self.heartbeat
-            random_msg = "".join([chr(random.randint(64,125)) for _ in range(30)])
-            while time.time()-self.command_delay < 0.5: time.sleep(0.7)
-            self.chat(f"/msg {self.username} HeartBeat-KeepAlive {random_msg}",0.3) # sends a random message to the bot to make sure it's running / connected
-            self.heartbeat_cooldown = time.time()
+    def info_tick(self):
+        if time.time() - self.info_delay > 60:
+            self.info_delay = time.time()
+
             self.chat("/whereami",0.2)
-
-            self.quota = utils.load_obj("quota")
-            utils.combine_dict(self.quota,self.quotaChange)
-            utils.save_obj(self.quota,"quota")
-            self.quotaChange = {}
 
             load = round((self.current_load/self.rate)*100)
             if self.current_load > self.rate:
                 logging.info("Overloaded!")
             else:
-                logging.info(f"Bot Load peaked at {load}%.")
+                logging.info(f"Bot Load peaked at {load}% during the past 60 seconds.")
             self.current_load = 0
 
-            logging.info(f"Heartbeat ({int(heartbeat_length)}sec)")
-            return
+    def file_tick(self):
+        if time.time() - self.file_delay > 30:
+            self.file_delay = time.time()
+            self.quota = utils.load_obj("quota")
+            utils.combine_dict(self.quota,self.quotaChange)
+            utils.save_obj(self.quota,"quota")
+            self.quotaChange = {}
+            logging.info("Files updated successfully.")
 
     def tick(self):
-        self.heartbeat_tick()
+        if time.time() - self.last_connection > 10 and self.login_attempt < 3:
+            self.login_attmpet += 1
+            self.last_connection = time.time()
+            try: self.disconnect()
+            except Exception: pass
+            logging.info("Reconnecting..")
+            self.initialize()
         try:
             self.party_tick()
             self.msg_tick()
             self.command_tick()
             self.cooldown_tick()
+            self.file_tick()
+            self.info_tick()
         except Exception as error:
             logging.warning(error)
 
-# contains the while loops that run the bot
-class thread:
-    def __init__(self,email,password,username):
-    # define objects
-        self.email = email
-        self.password = password
-        self.username = username
-
-    def start(self):
-        while True:
-            try:
-                # starts the bot and connects to the server *hence initialize*
-                self.bot = bot(self.email,self.password,self.username)
-                self.bot.initialize()
-                while True:
-                    try:
-                        # ticks the bot continuously every 1/20th of a second
-                        time.sleep(0.05)
-                        self.bot.tick()
-                    except Exception as error:
-                        logging.warning("Unknown Error! " + str(error))
-            except Exception as error:
-                logging.warning("Unknown Error! " + str(error))
-
+# contains the initizliation and keeps the bot running
 class thread:
     def __init__(self,email,password,username,rate):
-        self.email = email
+        # define objects
+        self.email    = email
         self.password = password
         self.username = username
-        self.rate = rate
-
-        self.mutedelay = 0
+        self.rate     = rate
 
     def start(self):
+        self.bot = bot(self.email,self.password,self.username,self.rate)
+        self.bot.initialize()
         while True:
-            try:
-                # starts the bot and connects to the server *hence initialize*
-                self.bot = bot(self.email,self.password,self.username,self.rate)
-                self.bot.initialize()
-                while True:
-                    try:
-                        time.sleep(0.05)
-                        self.bot.tick()
-                        if self.bot.muted:
-                            if int(self.bot.unmute_time-time.time()) > 0:
-                                if time.time() - self.mutedelay >= 360:
-                                    self.mutedelay = time.time()
-                                    logging.critical("Muted: " + str(self.bot.mute_duration))
-                            else:
-                                self.muted = self.bot.muted = False
-                    except Exception as error:
-                        logging.warning(error)
-                        self.bot.disconnect()
-            except Exception as error:
-                self.bot = None
-                logging.warning(error)
-                time.sleep(120)
+            time.sleep(0.05)
+            self.bot.tick()
+            if self.bot.muted:
+                if int(self.bot.unmute_time-time.time()) > 0:
+                    if time.time() - self.mutedelay >= 360:
+                        self.mutedelay = time.time()
+                        logging.critical("Muted: " + str(self.bot.mute_duration))
+                else:
+                    self.muted = self.bot.muted = False
