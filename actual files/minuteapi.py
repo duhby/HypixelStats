@@ -1,6 +1,7 @@
 # checks snipers using minutebrain and reza's api, more info on their discord
 import requests
 import json
+import mojangapi
 
 api_timeout = 3
 
@@ -20,12 +21,7 @@ logging.basicConfig(
 )
 
 def isSniper(player):
-    try:
-        response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{player}",timeout=api_timeout)
-        response = json.loads(response.text)
-        player = response["name"]
-    except:
-        logging.error("API Timeout! (mojang)")
+    player = mojangapi.correctCaps(player)
     try:
         response = requests.get(f"http://161.35.53.44:8080/?playerv3={player}",timeout=api_timeout)
         text = response.text
