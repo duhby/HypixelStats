@@ -17,3 +17,4 @@ def correctCaps(user):
         return response["name"]
     except:
         logging.error("API Timeout! (mojang)")
+        return user
