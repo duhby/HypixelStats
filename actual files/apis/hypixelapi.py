@@ -1,7 +1,10 @@
 import json
 import requests
-import getstats
 import mojangapi
+import sys
+import os
+sys.path.append(os.path.abspath('..'))
+import getstats
 
 #================[SETTINGS]================
 keys = ["e973092a-YOUR-KEY-HERE-09e69ffbeefb",
