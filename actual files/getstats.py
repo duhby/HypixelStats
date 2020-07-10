@@ -1,7 +1,7 @@
 from math import sqrt
 
 def getLevel(exp):
-    return sqrt(exp + 15312.5) - 125 / sqrt(2)) / (25*sqrt(2)
+    return (sqrt(exp + 15312.5) - 125 / sqrt(2)) / (25*sqrt(2))
 
 def getSwLevel(exp):
     xps = [0, 20, 70, 150, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000]
@@ -21,11 +21,11 @@ def roman(n):
         for _ in range(n // val[i]):
             rom += syb[i]
             num -= val[i]
-        i ÷= 1
+        i += 1
     return rom
 
 def getOverallStats(player):
-    try: 
+    try:
         exp = player["networkExp"]
         level = round(getLevel(exp),2)
         karma = player["karma"]
@@ -43,10 +43,10 @@ def getOverallStats(player):
 
 def getBwStats(player,mode):
     mode = mode[-1]
-    try: 
+    try:
         data = player["stats"]["Bedwars"]
         level = player["achievements"]["bedwars_level"]
-    except: 
+    except:
         return None
     out = {}
 
@@ -100,7 +100,7 @@ def getBwStats(player,mode):
         if "eight_one_winstreak" in data:
             winstreak = data["eight_one_winstreak"]
         else: winstreak = 0
-        
+
         # messy ok leave me alone
         if "eight_one_final_kills_bedwars" in data:
             finalkills = data["eight_one_final_kills_bedwars"]
@@ -144,7 +144,7 @@ def getBwStats(player,mode):
         if "eight_two_winstreak" in data:
             winstreak = data["eight_two_winstreak"]
         else: winstreak = 0
-        
+
         # messy ok leave me alone
         if "eight_two_final_kills_bedwars" in data:
             finalkills = data["eight_two_final_kills_bedwars"]
@@ -188,7 +188,7 @@ def getBwStats(player,mode):
         if "four_three_winstreak" in data:
             winstreak = data["four_three_winstreak"]
         else: winstreak = 0
-        
+
         # messy ok leave me alone
         if "four_three_final_kills_bedwars" in data:
             finalkills = data["four_three_final_kills_bedwars"]
@@ -232,7 +232,7 @@ def getBwStats(player,mode):
         if "four_four_winstreak" in data:
             winstreak = data["four_four_winstreak"]
         else: winstreak = 0
-        
+
         # messy ok leave me alone
         if "four_four_final_kills_bedwars" in data:
             finalkills = data["four_four_final_kills_bedwars"]
@@ -276,7 +276,7 @@ def getBwStats(player,mode):
         if "two_four_winstreak" in data:
             winstreak = data["two_four_winstreak"]
         else: winstreak = 0
-        
+
         # messy ok leave me alone
         if "two_four_final_kills_bedwars" in data:
             finalkills = data["two_four_final_kills_bedwars"]
@@ -325,10 +325,10 @@ def getBwStats(player,mode):
 
 def getSwStats(player,mode):
     mode = mode[-1]
-    try: 
+    try:
         data = player["stats"]["SkyWars"]
         level = round(getSwLevel(data["skywars_experience"]),1)
-    except: 
+    except:
         return None
     out = {}
 
@@ -350,7 +350,7 @@ def getSwStats(player,mode):
             kd = kills
         else:
             kd = 0
-        
+
         if "wins" in data:
             wins = data["wins"]
         else:
@@ -377,7 +377,7 @@ def getSwStats(player,mode):
             kd = kills
         else:
             kd = 0
-        
+
         if "wins_solo_normal" in data:
             wins = data["wins_solo_normal"]
         else:
@@ -404,7 +404,7 @@ def getSwStats(player,mode):
             kd = kills
         else:
             kd = 0
-        
+
         if "wins_solo_insane" in data:
             wins = data["wins_solo_insane"]
         else:
@@ -431,7 +431,7 @@ def getSwStats(player,mode):
             kd = kills
         else:
             kd = 0
-        
+
         if "wins_team_normal" in data:
             wins = data["wins_team_normal"]
         else:
@@ -458,7 +458,7 @@ def getSwStats(player,mode):
             kd = kills
         else:
             kd = 0
-        
+
         if "wins_team_insane" in data:
             wins = data["wins_team_insane"]
         else:
@@ -485,7 +485,7 @@ def getSwStats(player,mode):
             kd = kills
         else:
             kd = 0
-        
+
         if "wins_ranked" in data:
             wins = data["wins_ranked"]
         else:
@@ -515,32 +515,32 @@ def getTkrStats(player):
         laps = data["laps_completed"]
     else:
         laps = 0
-    
+
     # if "wins" in data:
     #     wins = data["wins"]
     # else:
     #     wins = 0
-    
+
     if "gold_trophy" in data:
         gold = data["gold_trophy"]
     else:
         gold = 0
-    
+
     if "silver_trophy" in data:
         silver = data["silver_trophy"]
     else:
         silver = 0
-    
+
     if "bronze_trophy" in data:
         bronze = data["bronze_trophy"]
     else:
         bronze = 0
-    
+
     # if "box_pickups" in data:
     #     boxes = data["box_pickups"]
     # else:
     #     boxes = 0
-    
+
     if "banana_hits_sent" in data:
         sent = data["banana_hits_sent"]
     else:
@@ -570,7 +570,7 @@ def getDuelStats(player,mode):
     out = {}
 
     # overall
-    if mode == "0":       
+    if mode == "0":
         prestige = "Null"
         if "all_modes_rookie_title_prestige" in data:
             prestige = "Rookie " + roman(data["all_modes_rookie_title_prestige"])
@@ -593,7 +593,7 @@ def getDuelStats(player,mode):
             winstreak = data["current_winstreak"]
         else:
             winstreak = 0
-        
+
         if "best_overall_winstreak" in data:
             bestws = data["best_overall_winstreak"]
         else:
@@ -623,7 +623,7 @@ def getDuelStats(player,mode):
             wr = "100%"
         else:
             wr = "0%"
-        
+
     # sumo
     if mode == "1":
         prestige = "Null"
@@ -648,7 +648,7 @@ def getDuelStats(player,mode):
             winstreak = data["current_sumo_winstreak"]
         else:
             winstreak = 0
-        
+
         if "best_sumo_winstreak" in data:
             bestws = data["best_sumo_winstreak"]
         else:
@@ -678,7 +678,7 @@ def getDuelStats(player,mode):
             wr = "100%"
         else:
             wr = "0%"
-    
+
     # uhc
     if mode == "2":
         prestige = "Null"
@@ -703,7 +703,7 @@ def getDuelStats(player,mode):
             winstreak = data["current_uhc_winstreak"]
         else:
             winstreak = 0
-        
+
         if "best_uhc_winstreak" in data:
             bestws = data["best_uhc_winstreak"]
         else:
@@ -733,7 +733,7 @@ def getDuelStats(player,mode):
             wr = "100%"
         else:
             wr = "0%"
-    
+
     # bridge
     if mode == "3":
         prestige = "Null"
@@ -758,7 +758,7 @@ def getDuelStats(player,mode):
             winstreak = data["current_bridge_winstreak"]
         else:
             winstreak = 0
-        
+
         if "best_bridge_winstreak" in data:
             bestws = data["best_bridge_winstreak"]
         else:
@@ -788,7 +788,7 @@ def getDuelStats(player,mode):
             wr = "100%"
         else:
             wr = "0%"
-    
+
     # classic
     if mode == "4":
         prestige = "Null"
@@ -813,7 +813,7 @@ def getDuelStats(player,mode):
             winstreak = data["current_classic_winstreak"]
         else:
             winstreak = 0
-        
+
         if "best_classic_winstreak" in data:
             bestws = data["best_classic_winstreak"]
         else:
