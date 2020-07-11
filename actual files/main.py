@@ -1,9 +1,9 @@
 # Main project file
 
 # files
-from apis import hypixelapi # grabs data from the hypixel api
-from apis import minuteapi  # grabs data from minutebrain and reza's sniper api
-from apis import mojangapi  # grabs data from mojang's api to correct capitalization of usernames
+import hypixelapi # grabs data from the hypixel api
+import minuteapi  # grabs data from minutebrain and reza's sniper api
+import mojangapi  # grabs data from mojang's api to correct capitalization of usernames
 import msgformat # self explanatory
 
 # PyCraft imports for minecraft related processes
@@ -288,7 +288,7 @@ class bot:
                     user = msg[msg.index("with")+4:msg.index("for")].split()[-1]
                     self.currentChannel = user
                     return
-                
+
                 # on friend request
                 elif ("Click to" in chat_raw) and ("/f accept " in chat_raw):
                     for data in chat_json["extra"]:
@@ -473,7 +473,7 @@ class bot:
             currentQueue = self.msgQueue.pop(0)
             if currentQueue["msgMode"] == "stats":
                 replyTo = currentQueue["replyto"]
-                if self.msgCurrentChannel != replyTo:
+                if self.currentChannel != replyTo:
                     while time.time()-self.command_delay<0.5: time.sleep(0.05)
                     self.chat("/r",0)
                 username = currentQueue["username"].lower()
@@ -501,7 +501,7 @@ class bot:
                         logging.info(f"Couldn't reply to {replyTo}")
                         self.msgError.append(replyTo)
                 self.currentChannel = ""
-                
+
             ## NOT CURRENTLY SUPPORTED
             # elif currentQueue["msgMode"] == "stats_multiple":
                 # while time.time()-self.command_delay < 0.6: time.sleep(0.05)
@@ -527,7 +527,7 @@ class bot:
 
             # api by minutebrain and reza
             elif currentQueue["msgMode"] == "sniper":
-                if self.msgCurrentChannel != replyTo:
+                if self.currentChannel != replyTo:
                     while time.time()-self.command_delay<0.5: time.sleep(0.05)
                     self.chat("/r",0)
                 data = currentQueue["data"]
@@ -666,7 +666,7 @@ class bot:
             if self.current_load > self.rate:
                 logging.info("Overloaded!")
             else:
-                logging.info(f"Bot Load peaked at {load}% during the past 60 seconds.")
+                logging.info(f"Bot Load peaked at {load}%.")
             self.current_load = 0
 
     def file_tick(self):
@@ -703,7 +703,7 @@ class thread:
         self.email    = email
         self.password = password
         self.username = username
-        self.rate     = rate
+        self.rate     = int(rate)
 
     def start(self):
         self.bot = bot(self.email,self.password,self.username,self.rate)
