@@ -409,8 +409,6 @@ class bot:
 
         if len(extra) == 0:
             extra = [user]
-        else:
-            pass
                 
         # user = 'FatDubs'
         # extra = ['fatdubs']
