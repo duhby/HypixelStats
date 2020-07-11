@@ -336,7 +336,7 @@ class bot:
 
         mode = "oa"
 
-        if len(extra)>1 and "+send" not in extra:
+        if "+send" not in extra:
             # bedwars stats request
             #any(item in foo for item in bar)
             if any(item in extra[-2:] for item in ["bw","bedwars"]):
@@ -407,6 +407,11 @@ class bot:
                 mode = "oa"
                 del extra[-1]
 
+        if len(extra) == 0:
+            extra = [user]
+        else:
+            pass
+                
         # user = 'FatDubs'
         # extra = ['fatdubs']
         # mode = 'tkr'
