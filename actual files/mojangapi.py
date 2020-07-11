@@ -1,9 +1,5 @@
-# checks snipers using minutebrain and reza's api, more info on their discord
 import requests
 import json
-import mojangapi
-
-api_timeout = 3
 
 # logging
 from logging.handlers import TimedRotatingFileHandler # used for logging different files according to time
@@ -20,14 +16,20 @@ logging.basicConfig(
     ]
 )
 
-def isSniper(player):
+api_timeout = 3 # in seconds
+
+def getUUID(user):
     try:
-        response = requests.get(f"http://161.35.53.44:8080/?playerv3={player}",timeout=api_timeout)
-        text = response.text
-        text = text.replace("\'","\"")
-        text = text.lower()
-        text = json.loads(text)
-        return text
+        response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{player}",timeout=api_timeout).json()
+        return response["id"]
     except:
-        logging.error("API Timeout! (minutebrain)")
-    return False
+        logging.error("API Timeout! (mojang)")
+        return None
+
+def correctCaps(user):
+    try:
+        response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{player}",timeout=api_timeout).json()
+        return response["name"]
+    except:
+        logging.error("API Timeout! (mojang)")
+        return user

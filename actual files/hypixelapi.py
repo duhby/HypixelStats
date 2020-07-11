@@ -1,10 +1,11 @@
 import json
 import requests
+import mojangapi
 import getstats
 
 #================[SETTINGS]================
-keys = ["e973092a-YOUR-KEY-HERE-09e69ffbeefb",
-        "d66d46a8-YOUR-KEY-HERE-65ed0498c06e"]
+keys = ["3b97ee05-YOUR-KEY-HERE-00d4dc1d3d01",
+        "428fe6ff-YOUR-KEY-HERE-55acf7cea2de"]
 
 api_timeout = 5 # in seconds
 #==========================================
@@ -38,12 +39,52 @@ def nextKey():
     n += 1
     return keys[n%len(keys)]
 
+def isFriended(username,bot):
+    uuid = mojangapi.getUUID(bot)
+    apikey = nextKey()
+    username = mojangapi.getUUID(username)
+    try:
+        friends = requests.get(f"https://api.hypixel.net/friends?key={apikey}&uuid={uuid}",timeout=api_timeout).json()
+    except Exception:
+        logging.error("API Timeout! (hypixel)")
+        return False
+    if username in str(friends):
+        return True
+    else:
+        return False
+
+def canMsg(username,bot):
+    apikey = nextKey()
+    try:
+        response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout).json()
+    except Exception:
+        logging.error("API Timeout! (hypixel)")
+    settings = response["player"]["settings"]
+    if settings["privateMessagePrivacy"] == "MAX":
+        level = 4
+    elif settings["privateMessagePrivacy"] == "HIGH":
+        level = 3
+    elif settings["privateMessagePrivacy"] == "MEDIUM":
+        level = 2
+    elif settings["privateMessagePrivacy"] == "LOW":
+        level = 1
+    elif settings["privateMessagePrivacy"] == "NONE":
+        level = 0
+
+    if isFriended(username,bot) and level < 4:
+        return True
+    elif level == 0:
+        return True
+    else:
+        return False
+
+
 def getPlayer(username,mode):
     apikey = nextKey()
     try:
         response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout)
     except Exception:
-        logging.warning("API Timeout! (hypixel)")
+        logging.error("API Timeout! (hypixel)")
         return {}
     try:
         player = response.json()
@@ -75,7 +116,7 @@ def getPlayer(username,mode):
             out["stats"] = getstats.getOverallStats(player)
         return out
     except Exception as error:
-        logging.warning(error)
+        logging.error(error)
         return {}
 
 def convert(data,mode):
@@ -141,7 +182,7 @@ def convert(data,mode):
                 main = username + f" - Nicked? (No data) mode = {mode}"
             else:
                 main = "[{:<13}]{:12} KD:{} WS:{} BestWS:{} WR:{}".format(stats["prestige"],username[:12],stats["kd"],stats["ws"],stats["bestws"],stats["wr"])
-            
+
         # pit
         elif "pit" in mode:
             mode = "PIT"

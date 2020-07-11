@@ -20,7 +20,7 @@ def roman(n):
     while n > 0:
         for _ in range(n // val[i]):
             rom += syb[i]
-            num -= val[i]
+            n -= val[i]
         i += 1
     return rom
 
