@@ -3,6 +3,7 @@
 # files
 from apis import hypixelapi # grabs data from the hypixel api
 from apis import minuteapi  # grabs data from minutebrain and reza's sniper api
+from apis import mojangapi  # grabs data from mojang's api to correct capitalization of usernames
 import msgformat # self explanatory
 
 # PyCraft imports for minecraft related processes
@@ -129,6 +130,8 @@ class bot:
         self.commandQueue = []  # holds the queue for commands to send
         self.command_delay = 0  # prevents sending commands too fast
         self.inParty = {"in":False,"from":"","timestamp":0}
+        self.currentChannel = ""   # makes sure the correct user is getting the correct message
+        self.msgError = []         # holds the users that aren't friends with the bot
         self.party_config = {}     # holds the data for players' party settings when they do +pmode
         self.player_cooldown = {}  # holds the cooldown time for players
         self.info_delay = time.time()      # info will be shown every 60 seconds
@@ -264,6 +267,7 @@ class bot:
                     self.mods_buffer = mods
                     # mods = ['Sneaak', 'gamerboy80']
 
+                # on party members list return
                 elif "Party Members" in chat_raw and "●" in chat_raw:
                     # Party Members: [VIP] MinuteBrain ● hystats_ ●
                     users = [user for user in msg[msg.index(":")+1:].split("●") if len(user)>1] # if statement removes "list out of range" error
@@ -279,6 +283,12 @@ class bot:
                     self.chat_msg(msg)
                     return
 
+                # on open pm channel
+                elif "for the next 5 minutes" in chat_raw and "green" in chat_raw:
+                    user = msg[msg.index("with")+4:msg.index("for")].split()[-1]
+                    self.currentChannel = user
+                    return
+                
                 # on friend request
                 elif ("Click to" in chat_raw) and ("/f accept " in chat_raw):
                     for data in chat_json["extra"]:
@@ -462,9 +472,10 @@ class bot:
         if len(self.msgQueue) > 0:
             currentQueue = self.msgQueue.pop(0)
             if currentQueue["msgMode"] == "stats":
-                while time.time()-self.command_delay < 0.7: time.sleep(0.05)
-                self.chat("/r",0)
                 replyTo = currentQueue["replyto"]
+                if self.msgCurrentChannel != replyTo:
+                    while time.time()-self.command_delay<0.5: time.sleep(0.05)
+                    self.chat("/r",0)
                 username = currentQueue["username"].lower()
                 if currentQueue["username"] == "me":
                     username = replyTo
@@ -473,9 +484,24 @@ class bot:
                 data = hypixelapi.getPlayer(username,mode)
                 raw = hypixelapi.convert(data,mode)
                 msg = msgformat.msg(raw)
-                logging.info(f"{mode} Stats: {replyTo} --> {username}")
-                self.chat(msg,0.4)
-
+                while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                if replyTo == self.currentChannel:
+                    logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
+                    self.chat(msg,0.4)
+                    if replyTo in self.msgError:
+                        logging.info(f"{replyTo} --> Friend Warning")
+                        self.msgError.remove(replyTo)
+                        while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                else:
+                    if hypixelapi.canMsg(replyTo,self.username):
+                        logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
+                        self.chat(f"/msg {replyTo} {msg}",0.4)
+                    else:
+                        logging.info(f"Couldn't reply to {replyTo}")
+                        self.msgError.append(replyTo)
+                self.currentChannel = ""
+                
             ## NOT CURRENTLY SUPPORTED
             # elif currentQueue["msgMode"] == "stats_multiple":
                 # while time.time()-self.command_delay < 0.6: time.sleep(0.05)
@@ -501,15 +527,31 @@ class bot:
 
             # api by minutebrain and reza
             elif currentQueue["msgMode"] == "sniper":
-                while time.time()-self.command_delay < 0.5: time.sleep(0.05)
-                self.chat("/r",0)
+                if self.msgCurrentChannel != replyTo:
+                    while time.time()-self.command_delay<0.5: time.sleep(0.05)
+                    self.chat("/r",0)
                 data = currentQueue["data"]
-                player = currentQueue["player"]
+                player = mojangapi.correctCaps(currentQueue["player"])
                 user = currentQueue["user"]
                 utils.increment_dict(self.quotaChange,user,1)
                 msg = msgformat.sniper(data,player)
-                logging.info(f"Sniper Check: {user} --> {player}")
-                self.chat(msg,0.4)
+                while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                if replyTo == self.currentChannel:
+                    logging.info(f"Sniper Check: {user} --> {player}")
+                    self.chat(msg,0.4)
+                    if replyTo in self.msgError:
+                        logging.info(f"{replyTo} --> Friend Warning")
+                        self.msgError.remove(replyTo)
+                        while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                else:
+                    if hypixelapi.canMsg(replyTo,self.username):
+                        logging.info(f"Sniper Check: {user} --> {player}")
+                        self.chat(f"/msg {replyTo} {msg}",0.4)
+                    else:
+                        logging.info(f"Couldn't reply to {replyTo}")
+                        self.msgError.append(replyTo)
+                self.currentChannel = ""
 
             elif currentQueue["msgMode"] == "wrong_syntax":
                 logging.info(f"Wrong Syntax: {currentQueue['user']}")
@@ -519,7 +561,7 @@ class bot:
             elif currentQueue["msgMode"] == "party_mode":
                 logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
-                self.chat("/r " + msgformat.party_mode(currentQueue["mode"]),0.5)
+                self.chat("/r " + msgformat.party_mode(msgformat.displaymode(currentQueue["mode"])),0.5)
 
     def party_tick(self):
         if len(self.partyQueue) > 0 and len(self.msgQueue) == 0:
