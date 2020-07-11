@@ -56,6 +56,32 @@ def isFriended(username,bot):
     else:
         return False
 
+def canMsg(username,bot):
+    apikey = nextKey()
+    try:
+        response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout).json()
+    except Exception:
+        logging.error("API Timeout! (hypixel)")
+    settings = response["player"]["settings"]
+    if settings["privateMessagePrivacy"] == "MAX":
+        level = 4
+    elif settings["privateMessagePrivacy"] == "HIGH":
+        level = 3
+    elif settings["privateMessagePrivacy"] == "MEDIUM":
+        level = 2
+    elif settings["privateMessagePrivacy"] == "LOW":
+        level = 1
+    elif settings["privateMessagePrivacy"] == "NONE":
+        level = 0
+    
+    if isFriended(username,bot) and level < 4:
+        return True
+    elif level == 0:
+        return True
+    else:
+        return False
+    
+
 def getPlayer(username,mode):
     apikey = nextKey()
     try:
