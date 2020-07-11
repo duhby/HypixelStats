@@ -325,14 +325,14 @@ class bot:
             logging.warning("Chat handle error! " + str(error))
 
     def chat_msg(self,msg):
-        # >>> msg = 'From [MVP+] FatDubs: FatDubs gamerboy80 tkr'
+        # >>> msg = 'From [MVP+] FatDubs: FatDubs tkr'
         msg = utils.clean_msg(msg)
         user = msg[:msg.index(":")].split()[-1]
         extra = msg[msg.index(":")+1:].split()
         extra = [i.lower() for i in extra] # converts list to lowercase
 
         # user = 'FatDubs'
-        # extra = ['fatdubs', 'gamerboy80', 'tkr']
+        # extra = ['fatdubs', 'tkr']
 
         mode = "oa"
 
@@ -408,7 +408,7 @@ class bot:
                 del extra[-1]
 
         # user = 'FatDubs'
-        # extra = ['fatdubs', 'gamerboy80']
+        # extra = ['fatdubs']
         # mode = 'tkr'
 
         if self.cooldowncheck(user,1): return # cooldown
