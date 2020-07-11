@@ -527,7 +527,7 @@ class bot:
 
             # api by minutebrain and reza
             elif currentQueue["msgMode"] == "sniper":
-                replyTo = currentQueue["replyto"]
+                replyTo = currentQueue["user"]
                 if self.currentChannel != replyTo:
                     while time.time()-self.command_delay<0.5: time.sleep(0.05)
                     self.chat("/r",0)
