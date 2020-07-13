@@ -430,7 +430,7 @@ class bot:
                 self.msg_config[user] = mode
                 self.msgQueue = [{"msgMode":"msg_mode","user":user,"mode":mode}] + self.msgQueue
 
-            elif cmd in ["+pmode","+setpartymode"]:
+            elif cmd in ["+pmode","+partymode"]:
                 self.party_config[user] = mode
                 self.msgQueue = [{"msgMode":"party_mode","user":user,"mode":mode}] + self.msgQueue
 
