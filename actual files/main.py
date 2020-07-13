@@ -328,104 +328,104 @@ class bot:
         # >>> msg = 'From [MVP+] FatDubs: FatDubs tkr'
         msg = utils.clean_msg(msg)
         user = msg[:msg.index(":")].split()[-1]
-        extra = msg[msg.index(":")+1:].split()
-        extra = [i.lower() for i in extra] # converts list to lowercase
+        args = msg[msg.index(":")+1:].split()
+        args = [i.lower() for i in args] # converts list to lowercase
 
         # user = 'FatDubs'
-        # extra = ['fatdubs', 'tkr']
+        # args = ['fatdubs', 'tkr']
 
         mode = "oa"
 
-        if "+send" not in extra:
+        if "+send" not in args:
             # bedwars stats request
             #any(item in foo for item in bar)
-            if any(item in extra[-2:] for item in ["bw","bedwars"]):
+            if any(item in args[-2:] for item in ["bw","bedwars"]):
                 mode = "bw"
-                try: extra.remove("bw")
+                try: args.remove("bw")
                 except: pass
-                try: extra.remove("bedwars")
+                try: args.remove("bedwars")
                 except: pass
                 modifier = 0
-                if extra[-1] in [str(x) for x in range(6)]:
-                    modifier = str(extra.pop(-1))
+                if args[-1] in [str(x) for x in range(6)]:
+                    modifier = str(args.pop(-1))
                 mode += str(modifier)
             # skywars stats request
-            elif any(item in extra[-2:] for item in ["sw","skywars"]):
+            elif any(item in args[-2:] for item in ["sw","skywars"]):
                 mode = "sw"
-                try: extra.remove("sw")
+                try: args.remove("sw")
                 except: pass
-                try: extra.remove("skywars")
+                try: args.remove("skywars")
                 except: pass
                 modifier = 0
-                if extra[-1] in [str(x) for x in range(6)]:
-                    modifier = str(extra.pop(-1))
+                if args[-1] in [str(x) for x in range(6)]:
+                    modifier = str(args.pop(-1))
                 mode += str(modifier)
 
             # duels stats requests
-            elif "duels" in extra[-2:]:
+            elif "duels" in args[-2:]:
                 mode = "duels"
-                extra.remove("duels")
+                args.remove("duels")
                 modifier = 0
-                if "sumo" in extra[-1] or "1" in extra[-1]:
+                if "sumo" in args[-1] or "1" in args[-1]:
                     modifier = 1
-                    try: extra.remove('sumo')
+                    try: args.remove('sumo')
                     except: pass
-                    try: extra.remove('1')
+                    try: args.remove('1')
                     except: pass
                 # uhc duels stats request
-                elif "uhc" in extra[-1] or "2" in extra[-1]:
+                elif "uhc" in args[-1] or "2" in args[-1]:
                     modifier = 2
-                    try: extra.remove('uhc')
+                    try: args.remove('uhc')
                     except: pass
-                    try: extra.remove('2')
+                    try: args.remove('2')
                     except: pass
                 # bridge duels stats request
-                elif "bridge" in extra[-1] or "3" in extra[-1]:
+                elif "bridge" in args[-1] or "3" in args[-1]:
                     modifier = 3
-                    try: extra.remove('bridge')
+                    try: args.remove('bridge')
                     except: pass
-                    try: extra.remove('3')
+                    try: args.remove('3')
                     except: pass
                 # classic duels stats request
-                elif "classic" in extra[-1] or "4" in extra[-1]:
+                elif "classic" in args[-1] or "4" in args[-1]:
                     modifier = 4
-                    try: extra.remove('classic')
+                    try: args.remove('classic')
                     except: pass
-                    try: extra.remove('4')
+                    try: args.remove('4')
                     except: pass
                 mode += str(modifier)
 
             # tkr stats request
-            elif "tkr" in extra[-1] or "gingerbread" in extra[-1]:
+            elif "tkr" in args[-1] or "gingerbread" in args[-1]:
                 mode = "tkr"
-                del extra[-1]
+                del args[-1]
             # the pit stats request
-            elif "pit" in extra[-1:]:
+            elif "pit" in args[-1:]:
                 mode = "pit"
-                del extra[-1]
-            elif "overall" in extra[-1]:
+                del args[-1]
+            elif "overall" in args[-1]:
                 mode = "oa"
-                del extra[-1]
+                del args[-1]
 
-        if len(extra) == 0:
-            extra = [user]
+        if len(args) == 0:
+            args = [user]
                 
         # user = 'FatDubs'
-        # extra = ['fatdubs']
+        # args = ['fatdubs']
         # mode = 'tkr'
 
         if self.cooldowncheck(user,1): return # cooldown
 
         # commands
         if "+" in msg:
-            cmd = extra[0]
-            length = len(extra)
+            cmd = args[0]
+            length = len(args)
             if cmd == "+send" and user in self.ops:
-                self.commandQueue.append({"command":"send_command","send":" ".join(extra[1:])})
+                self.commandQueue.append({"command":"send_command","send":" ".join(args[1:])})
 
             elif cmd in ["+c","+check"] and length == 2:
-                data = minuteapi.isSniper(extra[-1])
-                self.msgQueue = [{"msgMode":"sniper","user":user,"player":extra[-1],"data":data}] + self.msgQueue
+                data = minuteapi.isSniper(args[-1])
+                self.msgQueue = [{"msgMode":"sniper","user":user,"player":args[-1],"data":data}] + self.msgQueue
 
             elif cmd in ["+pmode","+setpartymode"]:
                 self.party_config[user] = mode
@@ -440,11 +440,11 @@ class bot:
             return
 
         # stats request
-        if len(extra) > 0 and len(extra[0]) < 17:
-            if len(extra) == 1:
-                self.msgQueue = [{"msgMode":"stats","replyto":user, "username":extra[0], "mode":mode}] + self.msgQueue
-            # elif len(extra) > 1 and len(extra) < 6:
-            #     self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "username":extra, "mode":mode}] + self.msgQueue
+        if len(args) > 0 and len(args[0]) < 17:
+            if len(args) == 1:
+                self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
+            # elif len(args) > 1 and len(args) < 6:
+            #     self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "username":args, "mode":mode}] + self.msgQueue
             else:
                 self.msgQueue = [{"msgMode":"wrong_syntax", "user":user}] + self.msgQueue
         else:
