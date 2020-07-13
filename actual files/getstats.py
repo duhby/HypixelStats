@@ -47,16 +47,6 @@ def getBwStats(player,mode):
         level = player["achievements"]["bedwars_level"]
     except:
         return None
-    
-    ## keys index
-    # 0 = winstreak
-    # 1 = finalkills
-    # 2 = finaldeaths
-    # 3 = wins
-    # 4 = losses
-    # 5 = bedsbroken
-    # 6 = bedslost
-
 
     keys = ["winstreak","final_kills_bedwars","final_deaths_bedwars","wins_bedwars","losses_bedwars","beds_broken_bedwars","beds_lost_bedwars"]
     
