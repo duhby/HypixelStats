@@ -421,6 +421,11 @@ class bot:
                 data = minuteapi.isSniper(args[-1])
                 self.msgQueue = [{"msgMode":"sniper","user":user,"player":args[-1],"data":data}] + self.msgQueue
             
+            elif cmd in ["+reset","+resetmode"]:
+                del self.msg_config[user]
+                del self.party_conf[user]
+                self.msgQueue = [{"msgMode":"reset_modes","user":user}] + self.msgQueue
+            
             elif cmd in ["+mode","+msgmode"]:
                 self.msg_config[user] = mode
                 self.msgQueue = [{"msgMode":"msg_mode","user":user,"mode":mode}] + self.msgQueue
@@ -563,6 +568,11 @@ class bot:
                 logging.info(f"Wrong Syntax: {currentQueue['user']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.wrong_syntax(),0.5)
+
+            elif currentQueue["msgMode"] == "reset_modes":
+                logging.info(f"Reset Modes: {currentQueue['user']}")
+                while time.time()-self.command_delay < 0.5: time.sleep(0.05)
+                self.chat("/r " + msgformat.reset_modes(msgformat.displaymode(currentQueue["mode"])),0.5)
 
             elif currentQueue["msgMode"] == "msg_mode":
                 logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
