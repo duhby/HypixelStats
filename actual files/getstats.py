@@ -3,27 +3,27 @@ from math import sqrt
 def getLevel(exp):
     return (sqrt(exp + 15312.5) - 125 / sqrt(2)) / (25*sqrt(2))
 
+# credit to MinuteBrain for converting php to python (idk php XD)
 def getSwLevel(exp):
-    xps = [0, 20, 70, 150, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000]
-    if exp >= 15000:
-        return (exp - 15000) / 10000. + 12
-    else:
-        for i in range(len(xps)):
-            if exp < xps[i]:
-                return i + float(exp - xps[i-1]) / (xps[i] - xps[i-1])
+    level = 0
+    for ezlv in [0,20,50,80,100,250,500,1000,1500,2500,4000,5000]:
+        if exp-ezlv < 0: break
+        exp -= ezlv
+        level += 1
+    return level + exp // 10000
 
-def roman(n):
+def getRoman(n):
     val = [10, 9, 5, 4, 1]
     syb = ["X", "IX", "V", "IV", "I"]
-    rom = ""
+    num = ""
     i = 0
     while n > 0:
         for _ in range(n // val[i]):
-            rom += syb[i]
+            num += syb[i]
             n -= val[i]
         i += 1
-    return rom
-
+    return num
+        
 def getOverallStats(player):
     try:
         exp = player["networkExp"]
@@ -33,7 +33,7 @@ def getOverallStats(player):
         quests = player["achievements"]["general_quest_master"]
     except:
         return None
-
+    
     out = {}
     out["level"] = level
     out["karma"] = karma
@@ -42,279 +42,78 @@ def getOverallStats(player):
     return out
 
 def getBwStats(player,mode):
-    mode = mode[-1]
     try:
         data = player["stats"]["Bedwars"]
         level = player["achievements"]["bedwars_level"]
     except:
         return None
+    
+    ## keys index
+    # 0 = winstreak
+    # 1 = finalkills
+    # 2 = finaldeaths
+    # 3 = wins
+    # 4 = losses
+    # 5 = bedsbroken
+    # 6 = bedslost
+
+
+    keys = ["winstreak","final_kills_bedwars","final_deaths_bedwars","wins_bedwars","losses_bedwars","beds_broken_bedwars","beds_lost_bedwars"]
+    
+    moders = ["eight_one_","eight_two_","four_three_","four_four_","two_four_"]
+
+    moden = int(mode[-1])
+    moden -= 1
+    
+    if moden != -1:
+        for i in range(len(keys)):
+            keys[i] = moders[moden] + keys[i]
+
+
+    if keys[0] in data: 
+        winstreak = data[keys[0]]
+    else: 
+        winstreak = 0
+    
+    # msg me on discord if you think I can make this less messy
+    if keys[1] in data:
+        finalkills = data[keys[1]]
+    else:
+        finalkills = 0
+    if keys[2] in data:
+        finaldealths = data[keys[2]]
+        fkdr = str(round(finalkills / finaldeaths,2))
+    elif keys[1] in data:
+        fkdr = finalkills
+    else:
+        fkdr = 0
+    
+    if keys[3] in data:
+        wins = data[keys[3]]
+    else:
+        wins = 0
+    if keys[4] in data:
+        losses = data[keys[4]]
+        wr = str(round(wins/(losses+wins)*100))
+        wr += "%"
+    elif keys[3] in data:
+        wr = "100%"
+    else:
+        wr = "0%"
+    
+    if keys[5] in data:
+        bedsbroken = data[keys[5]]
+    else:
+        bedsbroken = 0
+    if keys[6] in data:
+        bedslost = data[keys[6]]
+        bblr = str(round(bedsbroken/bedslost,1))
+    elif keys[5] in data:
+        bblr = bedsbroken
+    else:
+        bblr = "0"
+    
     out = {}
-
-    # overall
-    if mode == "0":
-        if "winstreak" in data:
-            winstreak = data["winstreak"]
-        else:
-            winstreak = 0
-
-        # messy ok leave me alone
-        if "final_kills_bedwars" in data:
-            finalkills = data["final_kills_bedwars"]
-        else:
-            finalkills = 0
-        if "final_deaths_bedwars" in data:
-            finaldeaths = data["final_deaths_bedwars"]
-            fkdr = str(round(finalkills / finaldeaths,2))
-        elif "final_kills_bedwars" in data:
-            fkdr = finalkills
-        else:
-            fkdr = 0
-
-        if "wins_bedwars" in data:
-            wins = data["wins_bedwars"]
-        else:
-            wins = 0
-        if "losses_bedwars" in data:
-            losses = data["losses_bedwars"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "wins_bedwars" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-        if "beds_broken_bedwars" in data:
-            bedsbroken = data["beds_broken_bedwars"]
-        else:
-            bedsbroken = 0
-        if "beds_lost_bedwars" in data:
-            bedslost = data["beds_lost_bedwars"]
-            bblr = str(round(bedsbroken/(bedslost),1))
-        elif "beds_broken_bedwars" in data:
-            bblr = bedsbroken
-        else:
-            bblr = 0
-
-    # solo
-    if mode == "1":
-        if "eight_one_winstreak" in data:
-            winstreak = data["eight_one_winstreak"]
-        else: winstreak = 0
-
-        # messy ok leave me alone
-        if "eight_one_final_kills_bedwars" in data:
-            finalkills = data["eight_one_final_kills_bedwars"]
-        else:
-            finalkills = 0
-        if "eight_one_final_deaths_bedwars" in data:
-            finaldeaths = data["eight_one_final_deaths_bedwars"]
-            fkdr = str(round(finalkills / finaldeaths,2))
-        elif "eight_one_final_kills_bedwars" in data:
-            fkdr = finalkills
-        else:
-            fkdr = 0
-
-        if "eight_one_wins_bedwars" in data:
-            wins = data["eight_one_wins_bedwars"]
-        else:
-            wins = 0
-        if "eight_one_losses_bedwars" in data:
-            losses = data["eight_one_losses_bedwars"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "eight_one_wins_bedwars" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-        if "eight_one_beds_broken_bedwars" in data:
-            bedsbroken = data["eight_one_beds_broken_bedwars"]
-        else:
-            bedsbroken = 0
-        if "eight_one_beds_lost_bedwars" in data:
-            bedslost = data["eight_one_beds_lost_bedwars"]
-            bblr = str(round(bedsbroken/(bedslost),1))
-        elif "eight_one_beds_broken_bedwars" in data:
-            bblr = bedsbroken
-        else:
-            bblr = 0
-
-    # doubles
-    if mode == "2":
-        if "eight_two_winstreak" in data:
-            winstreak = data["eight_two_winstreak"]
-        else: winstreak = 0
-
-        # messy ok leave me alone
-        if "eight_two_final_kills_bedwars" in data:
-            finalkills = data["eight_two_final_kills_bedwars"]
-        else:
-            finalkills = 0
-        if "eight_two_final_deaths_bedwars" in data:
-            finaldeaths = data["eight_two_final_deaths_bedwars"]
-            fkdr = str(round(finalkills / finaldeaths,2))
-        elif "eight_two_final_kills_bedwars" in data:
-            fkdr = finalkills
-        else:
-            fkdr = 0
-
-        if "eight_two_wins_bedwars" in data:
-            wins = data["eight_two_wins_bedwars"]
-        else:
-            wins = 0
-        if "eight_two_losses_bedwars" in data:
-            losses = data["eight_two_losses_bedwars"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "eight_two_wins_bedwars" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-        if "eight_two_beds_broken_bedwars" in data:
-            bedsbroken = data["eight_two_beds_broken_bedwars"]
-        else:
-            bedsbroken = 0
-        if "eight_two_beds_lost_bedwars" in data:
-            bedslost = data["eight_two_beds_lost_bedwars"]
-            bblr = str(round(bedsbroken/(bedslost),1))
-        elif "eight_two_beds_broken_bedwars" in data:
-            bblr = bedsbroken
-        else:
-            bblr = 0
-
-    # 3s
-    if mode == "3":
-        if "four_three_winstreak" in data:
-            winstreak = data["four_three_winstreak"]
-        else: winstreak = 0
-
-        # messy ok leave me alone
-        if "four_three_final_kills_bedwars" in data:
-            finalkills = data["four_three_final_kills_bedwars"]
-        else:
-            finalkills = 0
-        if "four_three_final_deaths_bedwars" in data:
-            finaldeaths = data["four_three_final_deaths_bedwars"]
-            fkdr = str(round(finalkills / finaldeaths,2))
-        elif "four_three_final_kills_bedwars" in data:
-            fkdr = finalkills
-        else:
-            fkdr = 0
-
-        if "four_three_wins_bedwars" in data:
-            wins = data["four_three_wins_bedwars"]
-        else:
-            wins = 0
-        if "four_three_losses_bedwars" in data:
-            losses = data["four_three_losses_bedwars"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "four_three_wins_bedwars" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-        if "four_three_beds_broken_bedwars" in data:
-            bedsbroken = data["four_three_beds_broken_bedwars"]
-        else:
-            bedsbroken = 0
-        if "four_three_beds_lost_bedwars" in data:
-            bedslost = data["four_three_beds_lost_bedwars"]
-            bblr = str(round(bedsbroken/(bedslost),1))
-        elif "four_three_beds_broken_bedwars" in data:
-            bblr = bedsbroken
-        else:
-            bblr = 0
-
-    # 4s
-    if mode == "4":
-        if "four_four_winstreak" in data:
-            winstreak = data["four_four_winstreak"]
-        else: winstreak = 0
-
-        # messy ok leave me alone
-        if "four_four_final_kills_bedwars" in data:
-            finalkills = data["four_four_final_kills_bedwars"]
-        else:
-            finalkills = 0
-        if "four_four_final_deaths_bedwars" in data:
-            finaldeaths = data["four_four_final_deaths_bedwars"]
-            fkdr = str(round(finalkills / finaldeaths,2))
-        elif "four_four_final_kills_bedwars" in data:
-            fkdr = finalkills
-        else:
-            fkdr = 0
-
-        if "four_four_wins_bedwars" in data:
-            wins = data["four_four_wins_bedwars"]
-        else:
-            wins = 0
-        if "four_four_losses_bedwars" in data:
-            losses = data["four_four_losses_bedwars"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "four_four_wins_bedwars" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-        if "four_four_beds_broken_bedwars" in data:
-            bedsbroken = data["four_four_beds_broken_bedwars"]
-        else:
-            bedsbroken = 0
-        if "four_four_beds_lost_bedwars" in data:
-            bedslost = data["four_four_beds_lost_bedwars"]
-            bblr = str(round(bedsbroken/(bedslost),1))
-        elif "four_four_beds_broken_bedwars" in data:
-            bblr = bedsbroken
-        else:
-            bblr = 0
-
-    # 4v4
-    if mode == "5":
-        if "two_four_winstreak" in data:
-            winstreak = data["two_four_winstreak"]
-        else: winstreak = 0
-
-        # messy ok leave me alone
-        if "two_four_final_kills_bedwars" in data:
-            finalkills = data["two_four_final_kills_bedwars"]
-        else:
-            finalkills = 0
-        if "two_four_final_deaths_bedwars" in data:
-            finaldeaths = data["two_four_final_deaths_bedwars"]
-            fkdr = str(round(finalkills / finaldeaths,2))
-        elif "two_four_final_kills_bedwars" in data:
-            fkdr = finalkills
-        else:
-            fkdr = 0
-
-        if "two_four_wins_bedwars" in data:
-            wins = data["two_four_wins_bedwars"]
-        else:
-            wins = 0
-        if "two_four_losses_bedwars" in data:
-            losses = data["two_four_losses_bedwars"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "two_four_wins_bedwars" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-        if "two_four_beds_broken_bedwars" in data:
-            bedsbroken = data["two_four_beds_broken_bedwars"]
-        else:
-            bedsbroken = 0
-        if "two_four_beds_lost_bedwars" in data:
-            bedslost = data["two_four_beds_lost_bedwars"]
-            bblr = str(round(bedsbroken/(bedslost),1))
-        elif "two_four_beds_broken_bedwars" in data:
-            bblr = bedsbroken
-        else:
-            bblr = 0
-
     out["level"] = level
     out["fkdr"] = fkdr
     out["wr"] = wr
@@ -324,181 +123,54 @@ def getBwStats(player,mode):
     return out
 
 def getSwStats(player,mode):
-    mode = mode[-1]
     try:
         data = player["stats"]["SkyWars"]
         level = round(getSwLevel(data["skywars_experience"]),1)
     except:
         return None
-    out = {}
 
+    # the only winstreak data in the api is overall
     if "win_streak" in data:
         winstreak = data["win_streak"]
     else:
         winstreak = 0
+    
+    keys = ["kills","deaths","wins","losses"]
+    moders = ["_solo_normal","_solo_insane","_teams_normal","_teams_insane","_ranked"]
 
-    # overall
-    if mode == "0":
-        if "kills" in data:
-            kills = data["kills"]
-        else:
-            kills = 0
-        if "deaths" in data:
-            deaths = data["deaths"]
-            kd = str(round(kills / deaths,2))
-        elif "kills" in data:
-            kd = kills
-        else:
-            kd = 0
+    moden = int(mode[-1])
+    moden -= 1
+    
+    if moden != -1:
+        for i in range(len(keys)):
+            keys[i] += moders[moden]
 
-        if "wins" in data:
-            wins = data["wins"]
-        else:
-            wins = 0
-        if "losses" in data:
-            losses = data["losses"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "wins" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
+    if keys[0] in data:
+        kills = data[kills[0]]
+    else:
+        kills = 0
+    if keys[1] in data:
+        deaths = data[keys[1]]
+        kd = str(round(kills / deaths,2))
+    elif keys[0] in data:
+        kd = kills
+    else:
+        kd = 0
+    
+    if keys[2] in data:
+        wins = data[keys[2]]
+    else:
+        wins = 0
+    if keys[3] in data:
+        losses = data[keys[3]]
+        wr = str(round(wins/(losses+wins)*100))
+        wr += "%"
+    elif keys[3] in data:
+        wr = "100%"
+    else:
+        wr = "0%"
 
-    # solo normal
-    if mode == "1":
-        if "kills_solo_normal" in data:
-            kills = data["kills_solo_normal"]
-        else:
-            kills = 0
-        if "deaths_solo_normal" in data:
-            deaths = data["deaths_solo_normal"]
-            kd = str(round(kills / deaths,2))
-        elif "kills_solo_normal" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "wins_solo_normal" in data:
-            wins = data["wins_solo_normal"]
-        else:
-            wins = 0
-        if "losses_solo_normal" in data:
-            losses = data["losses_solo_normal"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "wins_solo_normal" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-    # solo insane
-    if mode == "2":
-        if "kills_solo_insane" in data:
-            kills = data["kills_solo_insane"]
-        else:
-            kills = 0
-        if "deaths_solo_insane" in data:
-            deaths = data["deaths_solo_insane"]
-            kd = str(round(kills / deaths,2))
-        elif "kills_solo_insane" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "wins_solo_insane" in data:
-            wins = data["wins_solo_insane"]
-        else:
-            wins = 0
-        if "losses_solo_insane" in data:
-            losses = data["losses_solo_insane"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "wins_solo_insane" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-    # team normal
-    if mode == "3":
-        if "kills_team_normal" in data:
-            kills = data["kills_team_normal"]
-        else:
-            kills = 0
-        if "deaths_team_normal" in data:
-            deaths = data["deaths_team_normal"]
-            kd = str(round(kills / deaths,2))
-        elif "kills_team_normal" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "wins_team_normal" in data:
-            wins = data["wins_team_normal"]
-        else:
-            wins = 0
-        if "losses_team_normal" in data:
-            losses = data["losses_team_normal"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "wins_team_normal" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-    # team insane
-    if mode == "4":
-        if "kills_team_insane" in data:
-            kills = data["kills_team_insane"]
-        else:
-            kills = 0
-        if "deaths_team_insane" in data:
-            deaths = data["deaths_team_insane"]
-            kd = str(round(kills / deaths,2))
-        elif "kills_team_insane" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "wins_team_insane" in data:
-            wins = data["wins_team_insane"]
-        else:
-            wins = 0
-        if "losses_team_insane" in data:
-            losses = data["losses_team_insane"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "wins_team_insane" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-    # ranked
-    if mode == "5":
-        if "kills_ranked" in data:
-            kills = data["kills_ranked"]
-        else:
-            kills = 0
-        if "deaths_ranked" in data:
-            deaths = data["deaths_ranked"]
-            kd = str(round(kills / deaths,2))
-        elif "kills_ranked" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "wins_ranked" in data:
-            wins = data["wins_ranked"]
-        else:
-            wins = 0
-        if "losses_ranked" in data:
-            losses = data["losses_ranked"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "wins_ranked" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
+    out = {}
     out["level"] = level
     out["kd"] = kd
     out["wr"] = wr
@@ -564,286 +236,79 @@ def getTkrStats(player):
     return out
 
 def getDuelStats(player,mode):
-    mode = mode[-1]
+    moden = int(mode[-1])
     try: data = player["stats"]["Duels"]
     except: return None
+    
+    titlekeys = ["all_modes_","sumo_","uhc_","bridge_","classic_"]
+    titletxt = ["rookie_title_prestige","iron_title_prestige","gold_title_prestige","diamond_title_prestige","master_title_prestige","legend_title_prestige","grandmaster_title_prestige","godlike_title_prestige"]
+    titles = ["Rookie ","Iron ","Gold ","Diamond ","Master ","Legend ","GrandMaster ","GodLike "]
+
+    for i in range(len(titletxt)):
+        titletxt[i] = titlekeys[moden] + titletxt[i]
+    
+    for i in range(len(titletxt)):
+        prestige = titles[i] + getRoman(data[titletxt[i]])
+    
+    keys = ["kills","deaths","wins","losses"]
+    moders = ["sumo_duel_","uhc_duel_","bridge_duel_","classic_duel_"]
+
+    for i in range(len(keys)):
+        keys[i] = moders[moden] + keys[i]
+
+    # :/
+    if moden == 0:
+        best = "best_overall_winstreak"
+        current = "current_winstreak"
+    elif moden == 1:
+        best = "best_sumo_winstreak"
+        current = "current_sumo_winstreak"
+    elif moden == 2:
+        best = "best_uhc_winstreak"
+        current = "current_uhc_winstreak"
+    elif moden == 3:
+        best = "best_bridge_winstreak"
+        current = "current_bridge_winstreak"
+    elif moden == 4:
+        best = "best_classic_winstreak"
+        current = "current_classic_winstreak"
+    
+    if current in data:
+        winstreak = data[current]
+    else:
+        winstreak = 0
+    
+    if best in data:
+        bestws = data[best]
+    else:
+        bestws = 0
+    
+    if keys[0] in data:
+        kills = data[keys[0]]
+    else:
+        kills = 0
+    if keys[1] in data:
+        deaths = data[keys[1]]
+        kd = str(round(kills / deaths,2))
+    elif keys[0] in data:
+        kd = kills
+    else:
+        kd = 0
+
+    if keys[2] in data:
+        wins = data[keys[2]]
+    else:
+        wins = 0
+    if keys[3] in data:
+        losses = data[keys[3]]
+        wr = str(round(wins/(losses+wins)*100))
+        wr += "%"
+    elif keys[2] in data:
+        wr = "100%"
+    else:
+        wr = "0%"
+
     out = {}
-
-    # overall
-    if mode == "0":
-        prestige = "Null"
-        if "all_modes_rookie_title_prestige" in data:
-            prestige = "Rookie " + roman(data["all_modes_rookie_title_prestige"])
-        if "all_modes_iron_title_prestige" in data:
-            prestige = "Iron " + roman(data["all_modes_iron_title_prestige"])
-        if "all_modes_gold_title_prestige" in data:
-            prestige = "Gold " + roman(data["all_modes_gold_title_prestige"])
-        if "all_modes_diamond_title_prestige" in data:
-            prestige = "Diamond " + roman(data["all_modes_diamond_title_prestige"])
-        if "all_modes_master_title_prestige" in data:
-            prestige = "Master " + roman(data["all_modes_master_title_prestige"])
-        if "all_modes_legend_title_prestige" in data:
-            prestige = "Legend  " + roman(data["all_modes_legend_title_prestige"])
-        if "all_modes_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + roman(data["all_modes_grandmaster_title_prestige"])
-        if "all_modes_godlike_title_prestige" in data:
-            prestige = "GodLike " + roman(data["all_modes_godlike_title_prestige"])
-
-        if "current_winstreak" in data:
-            winstreak = data["current_winstreak"]
-        else:
-            winstreak = 0
-
-        if "best_overall_winstreak" in data:
-            bestws = data["best_overall_winstreak"]
-        else:
-            bestws = 0
-
-        if "kills" in data:
-            kills = data["kills"]
-        else:
-            kills = 0
-        if "deaths" in data:
-            deaths = data["deaths"]
-            kd = str(round(kills / deaths,2))
-        elif "kills" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "wins" in data:
-            wins = data["wins"]
-        else:
-            wins = 0
-        if "losses" in data:
-            losses = data["losses"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "wins" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-    # sumo
-    if mode == "1":
-        prestige = "Null"
-        if "sumo_rookie_title_prestige" in data:
-            prestige = "Rookie " + roman(data["sumo_rookie_title_prestige"])
-        if "sumo_iron_title_prestige" in data:
-            prestige = "Iron " + roman(data["sumo_iron_title_prestige"])
-        if "sumo_gold_title_prestige" in data:
-            prestige = "Gold " + roman(data["sumo_gold_title_prestige"])
-        if "sumo_diamond_title_prestige" in data:
-            prestige = "Diamond " + roman(data["sumo_diamond_title_prestige"])
-        if "sumo_master_title_prestige" in data:
-            prestige = "Master " + roman(data["sumo_master_title_prestige"])
-        if "sumo_legend_title_prestige" in data:
-            prestige = "Legend  " + roman(data["sumo_legend_title_prestige"])
-        if "sumo_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + roman(data["sumo_grandmaster_title_prestige"])
-        if "sumo_godlike_title_prestige" in data:
-            prestige = "GodLike " + roman(data["sumo_godlike_title_prestige"])
-
-        if "current_sumo_winstreak" in data:
-            winstreak = data["current_sumo_winstreak"]
-        else:
-            winstreak = 0
-
-        if "best_sumo_winstreak" in data:
-            bestws = data["best_sumo_winstreak"]
-        else:
-            bestws = 0
-
-        if "sumo_duel_kills" in data:
-            kills = data["sumo_duel_kills"]
-        else:
-            kills = 0
-        if "sumo_duel_deaths" in data:
-            deaths = data["sumo_duel_deaths"]
-            kd = str(round(kills / deaths,2))
-        elif "sumo_duel_kills" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "sumo_duel_wins" in data:
-            wins = data["sumo_duel_wins"]
-        else:
-            wins = 0
-        if "sumo_duel_losses" in data:
-            losses = data["sumo_duel_losses"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "sumo_duel_wins" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-    # uhc
-    if mode == "2":
-        prestige = "Null"
-        if "uhc_rookie_title_prestige" in data:
-            prestige = "Rookie " + roman(data["uhc_rookie_title_prestige"])
-        if "uhc_iron_title_prestige" in data:
-            prestige = "Iron " + roman(data["uhc_iron_title_prestige"])
-        if "uhc_gold_title_prestige" in data:
-            prestige = "Gold " + roman(data["uhc_gold_title_prestige"])
-        if "uhc_diamond_title_prestige" in data:
-            prestige = "Diamond " + roman(data["uhc_diamond_title_prestige"])
-        if "uhc_master_title_prestige" in data:
-            prestige = "Master " + roman(data["uhc_master_title_prestige"])
-        if "uhc_legend_title_prestige" in data:
-            prestige = "Legend  " + roman(data["uhc_legend_title_prestige"])
-        if "uhc_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + roman(data["uhc_grandmaster_title_prestige"])
-        if "uhc_godlike_title_prestige" in data:
-            prestige = "GodLike " + roman(data["uhc_godlike_title_prestige"])
-
-        if "current_uhc_winstreak" in data:
-            winstreak = data["current_uhc_winstreak"]
-        else:
-            winstreak = 0
-
-        if "best_uhc_winstreak" in data:
-            bestws = data["best_uhc_winstreak"]
-        else:
-            bestws = 0
-
-        if "uhc_duel_kills" in data:
-            kills = data["uhc_duel_kills"]
-        else:
-            kills = 0
-        if "uhc_duel_deaths" in data:
-            deaths = data["uhc_duel_deaths"]
-            kd = str(round(kills / deaths,2))
-        elif "uhc_duel_kills" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "uhc_duel_wins" in data:
-            wins = data["uhc_duel_wins"]
-        else:
-            wins = 0
-        if "uhc_duel_losses" in data:
-            losses = data["uhc_duel_losses"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "uhc_duel_wins" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-    # bridge
-    if mode == "3":
-        prestige = "Null"
-        if "bridge_rookie_title_prestige" in data:
-            prestige = "Rookie " + roman(data["bridge_rookie_title_prestige"])
-        if "bridge_iron_title_prestige" in data:
-            prestige = "Iron " + roman(data["bridge_iron_title_prestige"])
-        if "bridge_gold_title_prestige" in data:
-            prestige = "Gold " + roman(data["bridge_gold_title_prestige"])
-        if "bridge_diamond_title_prestige" in data:
-            prestige = "Diamond " + roman(data["bridge_diamond_title_prestige"])
-        if "bridge_master_title_prestige" in data:
-            prestige = "Master " + roman(data["bridge_master_title_prestige"])
-        if "bridge_legend_title_prestige" in data:
-            prestige = "Legend  " + roman(data["bridge_legend_title_prestige"])
-        if "bridge_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + roman(data["bridge_grandmaster_title_prestige"])
-        if "bridge_godlike_title_prestige" in data:
-            prestige = "GodLike " + roman(data["bridge_godlike_title_prestige"])
-
-        if "current_bridge_winstreak" in data:
-            winstreak = data["current_bridge_winstreak"]
-        else:
-            winstreak = 0
-
-        if "best_bridge_winstreak" in data:
-            bestws = data["best_bridge_winstreak"]
-        else:
-            bestws = 0
-
-        if "bridge_duel_kills" in data:
-            kills = data["bridge_duel_kills"]
-        else:
-            kills = 0
-        if "bridge_duel_deaths" in data:
-            deaths = data["bridge_duel_deaths"]
-            kd = str(round(kills / deaths,2))
-        elif "bridge_duel_kills" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "bridge_duel_wins" in data:
-            wins = data["bridge_duel_wins"]
-        else:
-            wins = 0
-        if "bridge_duel_losses" in data:
-            losses = data["bridge_duel_losses"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "bridge_duel_wins" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
-    # classic
-    if mode == "4":
-        prestige = "Null"
-        if "classic_rookie_title_prestige" in data:
-            prestige = "Rookie " + roman(data["classic_rookie_title_prestige"])
-        if "classic_iron_title_prestige" in data:
-            prestige = "Iron " + roman(data["classic_iron_title_prestige"])
-        if "classic_gold_title_prestige" in data:
-            prestige = "Gold " + roman(data["classic_gold_title_prestige"])
-        if "classic_diamond_title_prestige" in data:
-            prestige = "Diamond " + roman(data["classic_diamond_title_prestige"])
-        if "classic_master_title_prestige" in data:
-            prestige = "Master " + roman(data["classic_master_title_prestige"])
-        if "classic_legend_title_prestige" in data:
-            prestige = "Legend  " + roman(data["classic_legend_title_prestige"])
-        if "classic_grandmaster_title_prestige" in data:
-            prestige = "GrandMaster " + roman(data["classic_grandmaster_title_prestige"])
-        if "classic_godlike_title_prestige" in data:
-            prestige = "GodLike " + roman(data["classic_godlike_title_prestige"])
-
-        if "current_classic_winstreak" in data:
-            winstreak = data["current_classic_winstreak"]
-        else:
-            winstreak = 0
-
-        if "best_classic_winstreak" in data:
-            bestws = data["best_classic_winstreak"]
-        else:
-            bestws = 0
-
-        if "classic_duel_kills" in data:
-            kills = data["classic_duel_kills"]
-        else:
-            kills = 0
-        if "classic_duel_deaths" in data:
-            deaths = data["classic_duel_deaths"]
-            kd = str(round(kills / deaths,2))
-        elif "classic_duel_kills" in data:
-            kd = kills
-        else:
-            kd = 0
-
-        if "classic_duel_wins" in data:
-            wins = data["classic_duel_wins"]
-        else:
-            wins = 0
-        if "classic_duel_losses" in data:
-            losses = data["classic_duel_losses"]
-            wr = str(round(wins/(losses+wins)*100))
-            wr += "%"
-        elif "classic_duel_wins" in data:
-            wr = "100%"
-        else:
-            wr = "0%"
-
     out["prestige"] = prestige
     out["kd"] = kd
     out["ws"] = winstreak
