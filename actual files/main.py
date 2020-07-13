@@ -572,7 +572,7 @@ class bot:
             elif currentQueue["msgMode"] == "reset_modes":
                 logging.info(f"Reset Modes: {currentQueue['user']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
-                self.chat("/r " + msgformat.reset_modes(msgformat.displaymode(currentQueue["mode"])),0.5)
+                self.chat("/r " + msgformat.reset_modes(),0.5)
 
             elif currentQueue["msgMode"] == "msg_mode":
                 logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
