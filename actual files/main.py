@@ -132,9 +132,9 @@ class bot:
         self.inParty = {"in":False,"from":"","timestamp":0}
         self.currentChannel = ""   # makes sure the correct user is getting the correct message
         self.msgError = []         # holds the users that aren't friends with the bot
-        self.party_config = {}     # holds the data for players' party settings when they do +pmode
-        self.msg_config = {}       # holds the data for players' message settings when they do +mode
         self.player_cooldown = {}  # holds the cooldown time for players
+        self.party_config = utils.load_obj("party_conf")     # holds the data for players' party settings when they do +pmode
+        self.msg_config = utils.load_obj("msg_conf")         # holds the data for players' message settings when they do +mode
         self.info_delay = time.time()      # info will be shown every 60 seconds
         self.cooldown_timer = time.time()  # starts the cooldown timer
         self.file_delay = time.time()      # files will update every 120 seconds
@@ -694,6 +694,8 @@ class bot:
             utils.combine_dict(self.quota,self.quotaChange)
             utils.save_obj(self.quota,"quota")
             self.quotaChange = {}
+            utils.save_obj(self.party_config,"party_conf")
+            utils.save_obj(self.msg_config,"msg_conf")
             logging.info("Files updated successfully.")
 
     def tick(self):
