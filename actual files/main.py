@@ -133,6 +133,7 @@ class bot:
         self.currentChannel = ""   # makes sure the correct user is getting the correct message
         self.msgError = []         # holds the users that aren't friends with the bot
         self.party_config = {}     # holds the data for players' party settings when they do +pmode
+        self.msg_config = {}       # holds the data for players' message settings when they do +mode
         self.player_cooldown = {}  # holds the cooldown time for players
         self.info_delay = time.time()      # info will be shown every 60 seconds
         self.cooldown_timer = time.time()  # starts the cooldown timer
@@ -334,7 +335,7 @@ class bot:
         # user = 'FatDubs'
         # args = ['fatdubs', 'tkr']
 
-        mode = "oa"
+        mode = ""
 
         if "+send" not in args:
             # bedwars stats request
@@ -409,7 +410,7 @@ class bot:
 
         if len(args) == 0:
             args = [user]
-                
+        
         # user = 'FatDubs'
         # args = ['fatdubs']
         # mode = 'tkr'
@@ -426,6 +427,10 @@ class bot:
             elif cmd in ["+c","+check"] and length == 2:
                 data = minuteapi.isSniper(args[-1])
                 self.msgQueue = [{"msgMode":"sniper","user":user,"player":args[-1],"data":data}] + self.msgQueue
+            
+            elif cmd in ["+mode","+msgmode"]:
+                self.msg_config[user] = mode
+                self.msgQueue = [{"msgMode":"msg_mode","user":user,"mode":mode}] + self.msgQueue
 
             elif cmd in ["+pmode","+setpartymode"]:
                 self.party_config[user] = mode
@@ -483,6 +488,10 @@ class bot:
                 if currentQueue["username"] == "me":
                     username = replyTo
                 mode = currentQueue["mode"]
+                if user in self.msg_config and mode == "":
+                    mode = self.msg_config[user]
+                elif mode != "":
+                    mode = "oa"
                 utils.increment_dict(self.quotaChange,replyTo,1)
                 data = hypixelapi.getPlayer(username,mode)
                 raw = hypixelapi.convert(data,mode)
@@ -561,6 +570,11 @@ class bot:
                 logging.info(f"Wrong Syntax: {currentQueue['user']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.wrong_syntax(),0.5)
+
+            elif currentQueue["msgMode"] == "msg_mode":
+                logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
+                while time.time()-self.command_delay < 0.5: time.sleep(0.05)
+                self.chat("/r " + msgformat.msg_mode(msgformat.displaymode(currentQueue["mode"])),0.5)
 
             elif currentQueue["msgMode"] == "party_mode":
                 logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
