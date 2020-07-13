@@ -602,7 +602,7 @@ class bot:
                         time.sleep(0.05)
                     self.chat("/p leave")
                     self.inParty["in"] = False
-        if self.inParty["in"] and time.time()-self.inParty["timestamp"] > 3:
+        if self.inParty["in"] and time.time()-self.inParty["timestamp"] > 4:
             logging.info("Party timeout! " + str(self.inParty["from"]))
             while time.time()-self.command_delay < 0.8: time.sleep(0.05)
             self.chat("/p leave",0.3)
