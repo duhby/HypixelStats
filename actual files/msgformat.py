@@ -24,28 +24,6 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         yield(l[i:i+n])
 
-def discordmsg():
-    return "'/w _stats +discord' for a full list of features!"
-
-def discord_request():
-    link = "Discord; https://discord.gg/PtsBc4b                "
-    pack = []
-    pack.append(insertNoBreak("Type !verify {username} in the #verify channel"))
-    return link + insertInvis(" ".join(pack))
-
-def sniper(data,player):
-    sniper = data["sniper"]
-    reports = data["report"]
-    label = f"[{player}]"
-    sniper = data["sniper"]
-    reports = data["report"]
-    pack = []
-    pack.append("Made with <3 from FatDubs") # Changing this is illegal and unethical so don't or there will be consequences.
-    pack.append(f"{label:-^51}")
-    pack.append(insertNoBreak(f"Is sniper: {sniper}     Reports: {reports}"))
-    pack.append(f"{announcement:-^51}")
-    return insertInvis(" ".join(pack))
-
 def msg(raw):
     modeLabel = f"[{raw['mode']}]"
     pack = []
@@ -76,6 +54,34 @@ def party(raws,mode):
     if announcement != "":
         yield announcement
 
+def sniper(data,player):
+    sniper = data["sniper"]
+    reports = data["report"]
+    label = f"[{player}]"
+    sniper = data["sniper"]
+    reports = data["report"]
+    pack = []
+    pack.append("Made with <3 from FatDubs") # Changing this is illegal and unethical so don't or there will be consequences.
+    pack.append(f"{label:-^51}")
+    pack.append(insertNoBreak(f"Is sniper: {sniper}     Reports: {reports}"))
+    pack.append(f"{announcement:-^51}")
+    return insertInvis(" ".join(pack))
+
+def party_too_large():
+    pack = []
+    pack.append(f"Max party size is {partyMax}!")
+    return insertInvis(" ".join(pack))
+
+def discordmsg():
+    discmsgs = ["'/w _stats +discord' for a full list of features!","'/w _stats +discord' for feature requests!","'/w _stats +discord' for an uptime viewer!","'/w _stats +discord' for a TODO list!"]
+    return random.choice(discmsgs)
+
+def discord_request():
+    link = "Discord; https://discord.gg/PtsBc4b                "
+    pack = []
+    pack.append(insertNoBreak("Type !verify {username} in the #verify channel"))
+    return link + insertInvis(" ".join(pack))
+
 def wrong_syntax():
     pack = []
     pack.append(discordmsg())
@@ -84,10 +90,8 @@ def wrong_syntax():
     pack.append("Get a full list of features by joining the discord above!")
     return insertInvis(" ".join(pack))
 
-def party_too_large():
-    pack = []
-    pack.append(f"Max party size is {partyMax}!")
-    return insertInvis(" ".join(pack))
+def reset_modes():
+    return "Got it! Your settings are now reset to default."
 
 def msg_mode(mode):
     mode = displaymode(mode)
