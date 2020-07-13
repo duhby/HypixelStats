@@ -62,10 +62,15 @@ def party(raws,mode):
     yield f"Made with <3 from FatDubs" # Changing this is illegal and unethical so don't or there will be consequences.
     if random.randint(0,1) == 1:
         yield discordmsg()
-    yield f"[{mode}]"
+    # yield f"[{mode}]"
+    i = 0
     for block in blocks:
+        i += 1
         pack = []
-        pack.append("                  ")
+        if i == 0:
+            pack.append(f"[{mode}]")
+        else:
+            pack.append("                  ")
         for line in block: pack.append(insertNoBreak(line))
         yield insertInvis(" ".join(pack))
     if announcement != "":
