@@ -138,8 +138,6 @@ class bot:
         self.info_delay = time.time()      # info will be shown every 60 seconds
         self.cooldown_timer = time.time()  # starts the cooldown timer
         self.file_delay = time.time()      # files will update every 120 seconds
-        # self.heartbeat = time.time()       # starts the heartbeat timer
-        # self.heartbeat_cooldown = time.time()  # makes sure the bot doesn't send multiple messages to itself (due to lag)
         self.last_connection = time.time() # holds timestamp for keep_alive_packet (heartbeat replacement)
         self.login_attempt = 0   # how many attempts the bot tries to login
         self.muted = False       # returns a boolean if the bot is muted
@@ -245,11 +243,6 @@ class bot:
                             self.partyQueue.append({"mode":"queue","user":user})
                             return
                     return
-
-                # # on heartbeat
-                # elif "HeartBeat-KeepAlive" in chat_raw and "from" not in chat_raw.lower() and self.username in chat_raw:
-                #     self.heartbeat = time.time()
-                #     return
 
                 # on party leader return
                 elif "Party Leader" in chat_raw and "●" in chat_raw:
@@ -640,39 +633,6 @@ class bot:
                 while time.time()-self.command_delay < 0.7: time.sleep(0.05)
                 self.chat(currentQueue["send"],True)
                 self.chat("/whereami",True)
-
-    # def heartbeat_tick(self):
-        # if time.time()-self.heartbeat > 610:
-        #     self.connection.disconnect(True)
-        #     raise Exception("No heartbeat detect!")
-        #     return
-        #
-        # if time.time()-self.heartbeat > 120:
-        #     self.connection.connect()
-        #     logging.info("Reconnecting..")
-        #
-        # if time.time()-self.heartbeat > 60 and time.time()-self.heartbeat_cooldown > 30:
-        #     heartbeat_length = time.time()-self.heartbeat
-        #     random_msg = "".join([chr(random.randint(64,125)) for _ in range(30)])
-        #     while time.time()-self.command_delay < 0.5: time.sleep(0.7)
-        #     self.chat(f"/msg {self.username} HeartBeat-KeepAlive {random_msg}",0.3) # sends a random message to the bot to make sure it's running / connected
-        #     self.heartbeat_cooldown = time.time()
-        #     self.chat("/whereami",0.2)
-        #
-        #     self.quota = utils.load_obj("quota")
-        #     utils.combine_dict(self.quota,self.quotaChange)
-        #     utils.save_obj(self.quota,"quota")
-        #     self.quotaChange = {}
-        #
-        #     load = round((self.current_load/self.rate)*100)
-        #     if self.current_load > self.rate:
-        #         logging.info("Overloaded!")
-        #     else:
-        #         logging.info(f"Bot Load peaked at {load}%.")
-        #     self.current_load = 0
-        #
-        #     logging.info(f"Heartbeat ({int(heartbeat_length)}sec)")
-        #     return
 
     def info_tick(self):
         if time.time() - self.info_delay > 60:
