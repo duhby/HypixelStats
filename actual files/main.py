@@ -2,9 +2,9 @@
 
 # files
 import hypixelapi # grabs data from the hypixel api
-import minuteapi  # grabs data from minutebrain and reza's sniper api
+import minzaapi   # grabs data from minutebrain and reza's sniper api
 import mojangapi  # grabs data from mojang's api to correct capitalization of usernames
-import msgformat # self explanatory
+import msgformat  # self explanatory
 
 # PyCraft imports for minecraft related processes
 from minecraft import authentication as auth
