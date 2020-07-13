@@ -330,7 +330,7 @@ class bot:
 
         mode = ""
 
-        if "+send" not in args:
+        if any(x in args for x in ["+send","+c","+check","+reset","+resetmode","+discord"]):
             # bedwars stats request
             #any(item in foo for item in bar)
             if any(item in args[-2:] for item in ["bw","bedwars"]):
