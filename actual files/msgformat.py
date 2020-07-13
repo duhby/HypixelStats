@@ -89,6 +89,11 @@ def party_too_large():
     pack.append(f"Max party size is {partyMax}!")
     return insertInvis(" ".join(pack))
 
+def msg_mode(mode):
+    mode = displaymode(mode)
+    
+    return insertInvis(insertNoBreak(f"Got it! Next time you message me without defining  mode, I will show {mode} stats."))
+
 def party_mode(mode):
     mode = displaymode(mode)
 
