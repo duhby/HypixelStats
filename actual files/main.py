@@ -1,5 +1,9 @@
 # Main project file
 
+# credit to DavidDM for this code:
+#import baldness as bald
+#logging.info(bald.wig())
+
 # files
 import hypixelapi # grabs data from the hypixel api
 import minzaapi   # grabs data from minutebrain and reza's sniper api
