@@ -662,13 +662,14 @@ class bot:
         if time.time() - self.info_delay > 60:
             self.info_delay = time.time()
 
-            self.chat("/whereami",0.2)
-
             load = round((self.current_load/self.rate)*100)
             if self.current_load > self.rate:
                 logging.info("Overloaded!")
             else:
                 logging.info(f"Bot Load peaked at {load}%.")
+            
+            self.chat("/whereami",0.2)
+
             self.current_load = 0
 
     def file_tick(self):
