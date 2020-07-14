@@ -416,7 +416,6 @@ class bot:
         if len(args) == 0:
             args = [user.lower()]
 
-        logging.info(user)
         # user = 'FatDubs'
         # args = ['fatdubs']
         # mode = 'tkr'
@@ -435,8 +434,10 @@ class bot:
                 self.msgQueue = [{"msgMode":"sniper","user":user,"player":args[-1],"data":data}] + self.msgQueue
 
             elif cmd in ["+reset","+resetmode"]:
-                del self.msg_config[user]
-                del self.party_conf[user]
+                try: del self.msg_config[user]
+                except: pass
+                try: del self.party_config[user]
+                except: pass
                 self.msgQueue = [{"msgMode":"reset_modes","user":user}] + self.msgQueue
 
             elif cmd in ["+mode","+msgmode"]:
@@ -500,8 +501,8 @@ class bot:
                     username = replyTo
                 mode = currentQueue["mode"]
                 if replyTo in self.msg_config and mode == "":
-                    mode = self.msg_config[user]
-                elif mode != "":
+                    mode = self.msg_config[replyTo]
+                elif mode == "":
                     mode = "oa"
                 utils.increment_dict(self.quotaChange,replyTo,1)
                 data = hypixelapi.getPlayer(username,mode)
@@ -590,12 +591,12 @@ class bot:
             elif currentQueue["msgMode"] == "msg_mode":
                 logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
-                self.chat("/r " + msgformat.msg_mode(msgformat.displaymode(currentQueue["mode"])),0.5)
+                self.chat("/r " + msgformat.msg_mode(currentQueue["mode"]),0.5)
 
             elif currentQueue["msgMode"] == "party_mode":
                 logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
-                self.chat("/r " + msgformat.party_mode(msgformat.displaymode(currentQueue["mode"])),0.5)
+                self.chat("/r " + msgformat.party_mode(currentQueue["mode"]),0.5)
 
     def party_tick(self):
         if len(self.partyQueue) > 0 and len(self.msgQueue) == 0:
