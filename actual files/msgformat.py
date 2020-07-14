@@ -91,17 +91,15 @@ def wrong_syntax():
     return insertInvis(" ".join(pack))
 
 def reset_modes():
-    return insertInvis(insertNoBreak("Got it! Your settings are now reset to default."))
+    return insertInvis("Got it! Your settings are now reset to default.")
 
 def msg_mode(mode):
-    print(mode)
     mode = displaymode(mode)
-    print(mode)
 
     if mode == "":
         return invalidmode()
 
-    return insertInvis(insertNoBreak(f"Got it! Next time you message me without defining  mode, I will show {mode} stats."))
+    return insertInvis(f"Got it! Next time you message me without defining  mode, I will show {mode} stats.")
 
 def party_mode(mode):
     mode = displaymode(mode)
@@ -109,10 +107,10 @@ def party_mode(mode):
     if mode == "":
         return invalidmode()
 
-    return insertInvis(insertNoBreak(f"Got it! Next time you invite me I will show {mode} stats."))
+    return insertInvis(f"Got it! Next time you invite me I will show {mode} stats.")
 
 def invalidmode():
-    return insertInvis(insertNoBreak("Please enter a valid mode. More information on my discord. '/w _stats +discord'"))
+    return insertInvis("Please enter a valid mode. More information on my discord. '/w _stats +discord'")
 
 # converts code into display (ex. duels1 --> DUELS SUMO)
 def displaymode(mode):
