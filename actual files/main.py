@@ -462,8 +462,11 @@ class bot:
 
         # stats request
         if len(args) > 0 and len(args[0]) < 17:
-            if len(args) == 1:
-                self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
+            elif len(args) == 1:
+                if mode == "guild":
+                    self.msgQueue = [{"msgMode":"guild","replyto":user, "guild":args[0]}] + self.msgQueue
+                else:
+                    self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
             # elif len(args) > 1 and len(args) < 6:
             #     self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "username":args, "mode":mode}] + self.msgQueue
             else:
@@ -529,6 +532,38 @@ class bot:
                         logging.info(f"Couldn't reply to {replyTo}")
                         self.msgError.append(replyTo)
                 self.currentChannel = ""
+            
+            elif currentQueue["msgMode"] == "guild":
+                replyTo = currentQueue["replyto"]
+                if self.currentChannel != replyTo:
+                    while time.time()-self.command_delay<0.5: time.sleep(0.05)
+                    self.chat("/r",0)
+                username = currentQueue["username"].lower()
+                if currentQueue["username"] == "me":
+                    username = replyTo
+                utils.increment_dict(self.quotaChange,replyTo,1)
+                mode = "guild"
+                data = hypixelapi.getGuild(username,mode)
+                raw = hypixelapi.convert(data,mode)
+                msg = msgformat.msg(raw)
+                while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                if replyTo == self.currentChannel:
+                    logging.info(f"Guild Stats: {replyTo} --> {username}")
+                    self.chat(msg,0.4)
+                    if replyTo in self.msgError:
+                        logging.info(f"{replyTo} --> Friend Warning")
+                        self.msgError.remove(replyTo)
+                        while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                else:
+                    if hypixelapi.canMsg(replyTo,self.username):
+                        logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
+                        self.chat(f"/msg {replyTo} {msg}",0.4)
+                    else:
+                        logging.info(f"Couldn't reply to {replyTo}")
+                        self.msgError.append(replyTo)
+                self.currentChannel = ""
+                
 
             ## NOT CURRENTLY SUPPORTED
             # elif currentQueue["msgMode"] == "stats_multiple":
