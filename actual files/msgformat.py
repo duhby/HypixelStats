@@ -91,7 +91,7 @@ def wrong_syntax():
     return insertInvis(" ".join(pack))
 
 def reset_modes():
-    return "Got it! Your settings are now reset to default."
+    return insertInvis(insertNoBreak("Got it! Your settings are now reset to default."))
 
 def msg_mode(mode):
     mode = displaymode(mode)
