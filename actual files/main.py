@@ -412,6 +412,10 @@ class bot:
         elif "overall" in args[-1]:
             mode = "oa"
             del args[-1]
+        
+        elif "guild" in args[0]:
+            mode = "guild"
+            del args[0]
 
         if len(args) == 0:
             args = [user.lower()]
