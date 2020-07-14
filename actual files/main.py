@@ -2,7 +2,8 @@
 
 # credit to DavidDM for this code:
 #import baldness as bald
-#logging.info(bald.wig())
+#wig = bald.wig.initialize()
+#wig.start()
 
 # files
 import hypixelapi # grabs data from the hypixel api
