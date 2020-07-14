@@ -71,7 +71,7 @@ def getBwStats(player,mode):
     else:
         finalkills = 0
     if keys[2] in data:
-        finaldealths = data[keys[2]]
+        finaldeaths = data[keys[2]]
         fkdr = str(round(finalkills / finaldeaths,2))
     elif keys[1] in data:
         fkdr = finalkills
@@ -136,7 +136,7 @@ def getSwStats(player,mode):
             keys[i] += moders[moden]
 
     if keys[0] in data:
-        kills = data[kills[0]]
+        kills = data[keys[0]]
     else:
         kills = 0
     if keys[1] in data:
