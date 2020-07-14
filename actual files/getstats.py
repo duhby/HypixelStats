@@ -236,12 +236,14 @@ def getDuelStats(player,mode):
 
     for i in range(len(titletxt)):
         titletxt[i] = titlekeys[moden] + titletxt[i]
-    
+
+    prestige = "null"
     for i in range(len(titletxt)):
-        prestige = titles[i] + getRoman(data[titletxt[i]])
+        if titletxt[i] in data:
+            prestige = titles[i] + getRoman(data[titletxt[i]])
     
     keys = ["kills","deaths","wins","losses"]
-    moders = ["sumo_duel_","uhc_duel_","bridge_duel_","classic_duel_"]
+    moders = ["","sumo_duel_","uhc_duel_","bridge_duel_","classic_duel_"]
 
     for i in range(len(keys)):
         keys[i] = moders[moden] + keys[i]
