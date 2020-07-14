@@ -134,7 +134,7 @@ class bot:
         self.msgError = []         # holds the users that aren't friends with the bot
         self.player_cooldown = {}  # holds the cooldown time for players
         self.party_config = utils.load_obj("party_conf")     # holds the data for players' party settings when they do +pmode
-        self.msg_config = utils.load_obj("msg_conf")         # holds the data for players' message settings when they do +mode
+        self.msg_config = utils.load_obj("message_conf")     # holds the data for players' message settings when they do +mode
         self.info_delay = time.time()      # info will be shown every 60 seconds
         self.cooldown_timer = time.time()  # starts the cooldown timer
         self.file_delay = time.time()      # files will update every 120 seconds
@@ -328,38 +328,44 @@ class bot:
         # user = 'FatDubs'
         # args = ['fatdubs', 'tkr']
 
+        if args == []:
+            self.msgQueue = [{"msgMode":"wrong_syntax","user":user}] + self.msgQueue
+            return
         mode = ""
 
-        if any(x in args for x in ["+send","+c","+check","+reset","+resetmode","+discord"]):
-            # bedwars stats request
-            #any(item in foo for item in bar)
-            if any(item in args[-2:] for item in ["bw","bedwars"]):
-                mode = "bw"
-                try: args.remove("bw")
-                except: pass
-                try: args.remove("bedwars")
-                except: pass
-                modifier = 0
+        # bedwars stats request
+        if any(item in args[-2:] for item in ["bw","bedwars"]):
+            mode = "bw"
+            try: args.remove("bw")
+            except: pass
+            try: args.remove("bedwars")
+            except: pass
+            modifier = 0
+            try:
                 if args[-1] in [str(x) for x in range(6)]:
                     modifier = str(args.pop(-1))
-                mode += str(modifier)
-            # skywars stats request
-            elif any(item in args[-2:] for item in ["sw","skywars"]):
-                mode = "sw"
-                try: args.remove("sw")
-                except: pass
-                try: args.remove("skywars")
-                except: pass
-                modifier = 0
+            except: pass
+            mode += str(modifier)
+        # skywars stats request
+        elif any(item in args[-2:] for item in ["sw","skywars"]):
+            mode = "sw"
+            try: args.remove("sw")
+            except: pass
+            try: args.remove("skywars")
+            except: pass
+            modifier = 0
+            try:
                 if args[-1] in [str(x) for x in range(6)]:
                     modifier = str(args.pop(-1))
-                mode += str(modifier)
+            except: pass
+            mode += str(modifier)
 
-            # duels stats requests
-            elif "duels" in args[-2:]:
-                mode = "duels"
-                args.remove("duels")
-                modifier = 0
+        # duels stats requests
+        elif "duels" in args[-2:]:
+            mode = "duels"
+            args.remove("duels")
+            modifier = 0
+            try:
                 if "sumo" in args[-1] or "1" in args[-1]:
                     modifier = 1
                     try: args.remove('sumo')
@@ -387,23 +393,25 @@ class bot:
                     except: pass
                     try: args.remove('4')
                     except: pass
-                mode += str(modifier)
+            except: pass
+            mode += str(modifier)
 
-            # tkr stats request
-            elif "tkr" in args[-1] or "gingerbread" in args[-1]:
-                mode = "tkr"
-                del args[-1]
-            # the pit stats request
-            elif "pit" in args[-1:]:
-                mode = "pit"
-                del args[-1]
-            elif "overall" in args[-1]:
-                mode = "oa"
-                del args[-1]
+        # tkr stats request
+        elif "tkr" in args[-1] or "gingerbread" in args[-1]:
+            mode = "tkr"
+            del args[-1]
+        # the pit stats request
+        elif "pit" in args[-1:]:
+            mode = "pit"
+            del args[-1]
+        elif "overall" in args[-1]:
+            mode = "oa"
+            del args[-1]
 
         if len(args) == 0:
-            args = [user]
-        
+            args = [user.lower()]
+
+        logging.info(user)
         # user = 'FatDubs'
         # args = ['fatdubs']
         # mode = 'tkr'
@@ -418,14 +426,14 @@ class bot:
                 self.commandQueue.append({"command":"send_command","send":" ".join(args[1:])})
 
             elif cmd in ["+c","+check"] and length == 2:
-                data = minuteapi.isSniper(args[-1])
+                data = minzaapi.isSniper(args[-1])
                 self.msgQueue = [{"msgMode":"sniper","user":user,"player":args[-1],"data":data}] + self.msgQueue
-            
+
             elif cmd in ["+reset","+resetmode"]:
                 del self.msg_config[user]
                 del self.party_conf[user]
                 self.msgQueue = [{"msgMode":"reset_modes","user":user}] + self.msgQueue
-            
+
             elif cmd in ["+mode","+msgmode"]:
                 self.msg_config[user] = mode
                 self.msgQueue = [{"msgMode":"msg_mode","user":user,"mode":mode}] + self.msgQueue
@@ -486,7 +494,7 @@ class bot:
                 if currentQueue["username"] == "me":
                     username = replyTo
                 mode = currentQueue["mode"]
-                if user in self.msg_config and mode == "":
+                if replyTo in self.msg_config and mode == "":
                     mode = self.msg_config[user]
                 elif mode != "":
                     mode = "oa"
@@ -665,7 +673,7 @@ class bot:
             utils.save_obj(self.quota,"quota")
             self.quotaChange = {}
             utils.save_obj(self.party_config,"party_conf")
-            utils.save_obj(self.msg_config,"msg_conf")
+            utils.save_obj(self.msg_config,"message_conf")
             logging.info("Files updated successfully.")
 
     def tick(self):
