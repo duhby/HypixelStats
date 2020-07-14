@@ -16,7 +16,7 @@ logging.basicConfig(
     ]
 )
 
-api_timeout = 3 # in seconds
+api_timeout = 4 # in seconds
 
 def getUUID(user):
     try:

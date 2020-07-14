@@ -3,7 +3,7 @@ import requests
 import json
 import mojangapi
 
-api_timeout = 3
+api_timeout = 4.5
 
 # logging
 from logging.handlers import TimedRotatingFileHandler # used for logging different files according to time

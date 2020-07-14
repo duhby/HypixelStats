@@ -24,14 +24,35 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         yield(l[i:i+n])
 
-def discordmsg():
-    return "'/w _stats +discord' for a full list of features!"
-
-def discord_request():
-    link = "Discord; https://discord.gg/PtsBc4b                "
+def msg(raw):
+    modeLabel = f"[{raw['mode']}]"
     pack = []
-    pack.append(insertNoBreak("Type !verify {username} in the #verify channel"))
-    return link + insertInvis(" ".join(pack))
+    pack.append("Made with <3 from FatDubs") # Changing this is illegal and unethical so don't or there will be consequences.
+    pack.append(insertNoBreak(discordmsg()))
+    pack.append(f"{modeLabel:-^51}")
+    pack.append(insertNoBreak(raw["main"]))
+    pack.append(f"{announcement:-^51}")
+    return insertInvis(" ".join(pack))
+
+def party(raws,mode):
+    blocks = chunks(raws,3)
+    mode = displaymode(mode)
+    yield f"Made with <3 from FatDubs" # Changing this is illegal and unethical so don't or there will be consequences.
+    if random.randint(0,1) == 1:
+        yield discordmsg()
+    # yield f"[{mode}]"
+    i = 0
+    for block in blocks:
+        i += 1
+        pack = []
+        if i == 1:
+            pack.append(f"[{mode}]")
+        else:
+            pack.append("                  ")
+        for line in block: pack.append(insertNoBreak(line))
+        yield insertInvis(" ".join(pack))
+    if announcement != "":
+        yield announcement
 
 def sniper(data,player):
     sniper = data["sniper"]
@@ -46,30 +67,20 @@ def sniper(data,player):
     pack.append(f"{announcement:-^51}")
     return insertInvis(" ".join(pack))
 
-def msg(raw):
-    modeLabel = f"[{raw['mode']}]"
+def party_too_large():
     pack = []
-    pack.append("Made with <3 from FatDubs") # Changing this is illegal and unethical so don't or there will be consequences.
-    pack.append(insertNoBreak(discordmsg()))
-    pack.append(f"{modeLabel:-^51}")
-    pack.append(insertNoBreak(raw["main"]))
-    pack.append(f"{announcement:-^51}")
+    pack.append(f"Max party size is {partyMax}!")
     return insertInvis(" ".join(pack))
 
-def party(raws,mode):
-    blocks = chunks(raws,4)
-    mode = displaymode(mode)
-    yield f"Made with <3 from FatDubs" # Changing this is illegal and unethical so don't or there will be consequences.
-    if random.randint(0,1) == 1:
-        yield discordmsg()
-    yield f"[{mode}]"
-    for block in blocks:
-        pack = []
-        pack.append("                  ")
-        for line in block: pack.append(insertNoBreak(line))
-        yield insertInvis(" ".join(pack))
-    if announcement != "":
-        yield announcement
+def discordmsg():
+    discmsgs = ["'/w _stats +discord' for a full list of features!","'/w _stats +discord' for feature requests!","'/w _stats +discord' for an uptime viewer!","'/w _stats +discord' for a TODO list!"]
+    return random.choice(discmsgs)
+
+def discord_request():
+    link = "Discord; https://discord.gg/PtsBc4b                "
+    pack = []
+    pack.append(insertNoBreak("Type !verify {username} in the #verify channel"))
+    return link + insertInvis(" ".join(pack))
 
 def wrong_syntax():
     pack = []
@@ -79,15 +90,29 @@ def wrong_syntax():
     pack.append("Get a full list of features by joining the discord above!")
     return insertInvis(" ".join(pack))
 
-def party_too_large():
-    pack = []
-    pack.append(f"Max party size is {partyMax}!")
-    return insertInvis(" ".join(pack))
+def reset_modes():
+    return insertInvis(insertNoBreak("Got it! Your settings are now reset to default."))
+
+def msg_mode(mode):
+    print(mode)
+    mode = displaymode(mode)
+    print(mode)
+
+    if mode == "":
+        return invalidmode()
+
+    return insertInvis(insertNoBreak(f"Got it! Next time you message me without defining  mode, I will show {mode} stats."))
 
 def party_mode(mode):
     mode = displaymode(mode)
 
+    if mode == "":
+        return invalidmode()
+
     return insertInvis(insertNoBreak(f"Got it! Next time you invite me I will show {mode} stats."))
+
+def invalidmode():
+    return insertInvis(insertNoBreak("Please enter a valid mode. More information on my discord. '/w _stats +discord'"))
 
 # converts code into display (ex. duels1 --> DUELS SUMO)
 def displaymode(mode):

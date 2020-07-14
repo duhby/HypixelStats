@@ -1,10 +1,15 @@
 # Main project file
 
+# credit to DavidDM for this code:
+#import baldness as bald
+#wig = bald.wig.initialize()
+#wig.start()
+
 # files
 import hypixelapi # grabs data from the hypixel api
-import minuteapi  # grabs data from minutebrain and reza's sniper api
+import minzaapi   # grabs data from minutebrain and reza's sniper api
 import mojangapi  # grabs data from mojang's api to correct capitalization of usernames
-import msgformat # self explanatory
+import msgformat  # self explanatory
 
 # PyCraft imports for minecraft related processes
 from minecraft import authentication as auth
@@ -132,13 +137,12 @@ class bot:
         self.inParty = {"in":False,"from":"","timestamp":0}
         self.currentChannel = ""   # makes sure the correct user is getting the correct message
         self.msgError = []         # holds the users that aren't friends with the bot
-        self.party_config = {}     # holds the data for players' party settings when they do +pmode
         self.player_cooldown = {}  # holds the cooldown time for players
+        self.party_config = utils.load_obj("party_conf")     # holds the data for players' party settings when they do +pmode
+        self.msg_config = utils.load_obj("message_conf")     # holds the data for players' message settings when they do +mode
         self.info_delay = time.time()      # info will be shown every 60 seconds
         self.cooldown_timer = time.time()  # starts the cooldown timer
         self.file_delay = time.time()      # files will update every 120 seconds
-        # self.heartbeat = time.time()       # starts the heartbeat timer
-        # self.heartbeat_cooldown = time.time()  # makes sure the bot doesn't send multiple messages to itself (due to lag)
         self.last_connection = time.time() # holds timestamp for keep_alive_packet (heartbeat replacement)
         self.login_attempt = 0   # how many attempts the bot tries to login
         self.muted = False       # returns a boolean if the bot is muted
@@ -245,11 +249,6 @@ class bot:
                             return
                     return
 
-                # # on heartbeat
-                # elif "HeartBeat-KeepAlive" in chat_raw and "from" not in chat_raw.lower() and self.username in chat_raw:
-                #     self.heartbeat = time.time()
-                #     return
-
                 # on party leader return
                 elif "Party Leader" in chat_raw and "●" in chat_raw:
                     # msg = Party Leader: [MVP+] FatDubs ●
@@ -328,103 +327,124 @@ class bot:
         # >>> msg = 'From [MVP+] FatDubs: FatDubs tkr'
         msg = utils.clean_msg(msg)
         user = msg[:msg.index(":")].split()[-1]
-        extra = msg[msg.index(":")+1:].split()
-        extra = [i.lower() for i in extra] # converts list to lowercase
+        args = msg[msg.index(":")+1:].split()
+        args = [i.lower() for i in args] # converts list to lowercase
 
         # user = 'FatDubs'
-        # extra = ['fatdubs', 'tkr']
+        # args = ['fatdubs', 'tkr']
 
-        mode = "oa"
+        if args == []:
+            self.msgQueue = [{"msgMode":"wrong_syntax","user":user}] + self.msgQueue
+            return
+        mode = ""
 
-        if len(extra)>1 and "+send" not in extra:
-            # bedwars stats request
-            #any(item in foo for item in bar)
-            if any(item in extra[-2:] for item in ["bw","bedwars"]):
-                mode = "bw"
-                try: extra.remove("bw")
-                except: pass
-                try: extra.remove("bedwars")
-                except: pass
-                modifier = 0
-                if extra[-1] in [str(x) for x in range(6)]:
-                    modifier = str(extra.pop(-1))
-                mode += str(modifier)
-            # skywars stats request
-            elif any(item in extra[-2:] for item in ["sw","skywars"]):
-                mode = "sw"
-                try: extra.remove("sw")
-                except: pass
-                try: extra.remove("skywars")
-                except: pass
-                modifier = 0
-                if extra[-1] in [str(x) for x in range(6)]:
-                    modifier = str(extra.pop(-1))
-                mode += str(modifier)
+        # bedwars stats request
+        if any(item in args[-2:] for item in ["bw","bedwars"]):
+            mode = "bw"
+            try: args.remove("bw")
+            except: pass
+            try: args.remove("bedwars")
+            except: pass
+            modifier = 0
+            try:
+                if args[-1] in [str(x) for x in range(6)]:
+                    modifier = str(args.pop(-1))
+            except: pass
+            mode += str(modifier)
+        # skywars stats request
+        elif any(item in args[-2:] for item in ["sw","skywars"]):
+            mode = "sw"
+            try: args.remove("sw")
+            except: pass
+            try: args.remove("skywars")
+            except: pass
+            modifier = 0
+            try:
+                if args[-1] in [str(x) for x in range(6)]:
+                    modifier = str(args.pop(-1))
+            except: pass
+            mode += str(modifier)
 
-            # duels stats requests
-            elif "duels" in extra[-2:]:
-                mode = "duels"
-                extra.remove("duels")
-                modifier = 0
-                if "sumo" in extra[-1] or "1" in extra[-1]:
+        # duels stats requests
+        elif "duels" in args[-2:]:
+            mode = "duels"
+            args.remove("duels")
+            modifier = 0
+            try:
+                if "sumo" in args[-1] or "1" in args[-1]:
                     modifier = 1
-                    try: extra.remove('sumo')
+                    try: args.remove('sumo')
                     except: pass
-                    try: extra.remove('1')
+                    try: args.remove('1')
                     except: pass
                 # uhc duels stats request
-                elif "uhc" in extra[-1] or "2" in extra[-1]:
+                elif "uhc" in args[-1] or "2" in args[-1]:
                     modifier = 2
-                    try: extra.remove('uhc')
+                    try: args.remove('uhc')
                     except: pass
-                    try: extra.remove('2')
+                    try: args.remove('2')
                     except: pass
                 # bridge duels stats request
-                elif "bridge" in extra[-1] or "3" in extra[-1]:
+                elif "bridge" in args[-1] or "3" in args[-1]:
                     modifier = 3
-                    try: extra.remove('bridge')
+                    try: args.remove('bridge')
                     except: pass
-                    try: extra.remove('3')
+                    try: args.remove('3')
                     except: pass
                 # classic duels stats request
-                elif "classic" in extra[-1] or "4" in extra[-1]:
+                elif "classic" in args[-1] or "4" in args[-1]:
                     modifier = 4
-                    try: extra.remove('classic')
+                    try: args.remove('classic')
                     except: pass
-                    try: extra.remove('4')
+                    try: args.remove('4')
                     except: pass
-                mode += str(modifier)
+            except: pass
+            mode += str(modifier)
 
-            # tkr stats request
-            elif "tkr" in extra[-1] or "gingerbread" in extra[-1]:
-                mode = "tkr"
-                del extra[-1]
-            # the pit stats request
-            elif "pit" in extra[-1:]:
-                mode = "pit"
-                del extra[-1]
-            elif "overall" in extra[-1]:
-                mode = "oa"
-                del extra[-1]
+        # tkr stats request
+        elif "tkr" in args[-1] or "gingerbread" in args[-1]:
+            mode = "tkr"
+            del args[-1]
+        # the pit stats request
+        elif "pit" in args[-1:]:
+            mode = "pit"
+            del args[-1]
+        elif "overall" in args[-1]:
+            mode = "oa"
+            del args[-1]
+
+        if len(args) == 0:
+            args = [user.lower()]
 
         # user = 'FatDubs'
-        # extra = ['fatdubs']
+        # args = ['fatdubs']
         # mode = 'tkr'
 
         if self.cooldowncheck(user,1): return # cooldown
 
         # commands
         if "+" in msg:
-            cmd = extra[0]
-            length = len(extra)
+            cmd = args[0]
+            length = len(args)
             if cmd == "+send" and user in self.ops:
-                self.commandQueue.append({"command":"send_command","send":" ".join(extra[1:])})
+                self.commandQueue.append({"command":"send_command","send":" ".join(args[1:])})
 
             elif cmd in ["+c","+check"] and length == 2:
-                data = minuteapi.isSniper(extra[-1])
-                self.msgQueue = [{"msgMode":"sniper","user":user,"player":extra[-1],"data":data}] + self.msgQueue
+                data = minzaapi.isSniper(args[-1])
+                self.msgQueue = [{"msgMode":"sniper","user":user,"player":args[-1],"data":data}] + self.msgQueue
 
-            elif cmd in ["+pmode","+setpartymode"]:
+            elif cmd in ["+reset","+resetmode"]:
+                try: del self.msg_config[user]
+                except: pass
+                try: del self.party_config[user]
+                except: pass
+                self.msgQueue = [{"msgMode":"reset_modes","user":user}] + self.msgQueue
+
+            elif cmd in ["+mode","+msgmode"]:
+                self.msg_config[user] = mode
+                self.msgQueue = [{"msgMode":"msg_mode","user":user,"mode":mode}] + self.msgQueue
+
+            elif cmd in ["+pmode","+partymode"]:
                 self.party_config[user] = mode
                 self.msgQueue = [{"msgMode":"party_mode","user":user,"mode":mode}] + self.msgQueue
 
@@ -437,11 +457,11 @@ class bot:
             return
 
         # stats request
-        if len(extra) > 0 and len(extra[0]) < 17:
-            if len(extra) == 1:
-                self.msgQueue = [{"msgMode":"stats","replyto":user, "username":extra[0], "mode":mode}] + self.msgQueue
-            # elif len(extra) > 1 and len(extra) < 6:
-            #     self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "username":extra, "mode":mode}] + self.msgQueue
+        if len(args) > 0 and len(args[0]) < 17:
+            if len(args) == 1:
+                self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
+            # elif len(args) > 1 and len(args) < 6:
+            #     self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "username":args, "mode":mode}] + self.msgQueue
             else:
                 self.msgQueue = [{"msgMode":"wrong_syntax", "user":user}] + self.msgQueue
         else:
@@ -480,6 +500,10 @@ class bot:
                 if currentQueue["username"] == "me":
                     username = replyTo
                 mode = currentQueue["mode"]
+                if replyTo in self.msg_config and mode == "":
+                    mode = self.msg_config[replyTo]
+                elif mode == "":
+                    mode = "oa"
                 utils.increment_dict(self.quotaChange,replyTo,1)
                 data = hypixelapi.getPlayer(username,mode)
                 raw = hypixelapi.convert(data,mode)
@@ -559,10 +583,20 @@ class bot:
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.wrong_syntax(),0.5)
 
+            elif currentQueue["msgMode"] == "reset_modes":
+                logging.info(f"Reset Modes: {currentQueue['user']}")
+                while time.time()-self.command_delay < 0.5: time.sleep(0.05)
+                self.chat("/r " + msgformat.reset_modes(),0.5)
+
+            elif currentQueue["msgMode"] == "msg_mode":
+                logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
+                while time.time()-self.command_delay < 0.5: time.sleep(0.05)
+                self.chat("/r " + msgformat.msg_mode(currentQueue["mode"]),0.5)
+
             elif currentQueue["msgMode"] == "party_mode":
                 logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
-                self.chat("/r " + msgformat.party_mode(msgformat.displaymode(currentQueue["mode"])),0.5)
+                self.chat("/r " + msgformat.party_mode(currentQueue["mode"]),0.5)
 
     def party_tick(self):
         if len(self.partyQueue) > 0 and len(self.msgQueue) == 0:
@@ -599,7 +633,7 @@ class bot:
                         time.sleep(0.05)
                     self.chat("/p leave")
                     self.inParty["in"] = False
-        if self.inParty["in"] and time.time()-self.inParty["timestamp"] > 3:
+        if self.inParty["in"] and time.time()-self.inParty["timestamp"] > 4:
             logging.info("Party timeout! " + str(self.inParty["from"]))
             while time.time()-self.command_delay < 0.8: time.sleep(0.05)
             self.chat("/p leave",0.3)
@@ -624,39 +658,6 @@ class bot:
                 self.chat(currentQueue["send"],True)
                 self.chat("/whereami",True)
 
-    # def heartbeat_tick(self):
-        # if time.time()-self.heartbeat > 610:
-        #     self.connection.disconnect(True)
-        #     raise Exception("No heartbeat detect!")
-        #     return
-        #
-        # if time.time()-self.heartbeat > 120:
-        #     self.connection.connect()
-        #     logging.info("Reconnecting..")
-        #
-        # if time.time()-self.heartbeat > 60 and time.time()-self.heartbeat_cooldown > 30:
-        #     heartbeat_length = time.time()-self.heartbeat
-        #     random_msg = "".join([chr(random.randint(64,125)) for _ in range(30)])
-        #     while time.time()-self.command_delay < 0.5: time.sleep(0.7)
-        #     self.chat(f"/msg {self.username} HeartBeat-KeepAlive {random_msg}",0.3) # sends a random message to the bot to make sure it's running / connected
-        #     self.heartbeat_cooldown = time.time()
-        #     self.chat("/whereami",0.2)
-        #
-        #     self.quota = utils.load_obj("quota")
-        #     utils.combine_dict(self.quota,self.quotaChange)
-        #     utils.save_obj(self.quota,"quota")
-        #     self.quotaChange = {}
-        #
-        #     load = round((self.current_load/self.rate)*100)
-        #     if self.current_load > self.rate:
-        #         logging.info("Overloaded!")
-        #     else:
-        #         logging.info(f"Bot Load peaked at {load}%.")
-        #     self.current_load = 0
-        #
-        #     logging.info(f"Heartbeat ({int(heartbeat_length)}sec)")
-        #     return
-
     def info_tick(self):
         if time.time() - self.info_delay > 60:
             self.info_delay = time.time()
@@ -677,6 +678,8 @@ class bot:
             utils.combine_dict(self.quota,self.quotaChange)
             utils.save_obj(self.quota,"quota")
             self.quotaChange = {}
+            utils.save_obj(self.party_config,"party_conf")
+            utils.save_obj(self.msg_config,"message_conf")
             logging.info("Files updated successfully.")
 
     def tick(self):
