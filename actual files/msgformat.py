@@ -35,7 +35,7 @@ def msg(raw):
     return insertInvis(" ".join(pack))
 
 def party(raws,mode):
-    blocks = chunks(raws,4)
+    blocks = chunks(raws,3)
     mode = displaymode(mode)
     yield f"Made with <3 from FatDubs" # Changing this is illegal and unethical so don't or there will be consequences.
     if random.randint(0,1) == 1:
