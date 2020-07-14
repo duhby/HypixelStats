@@ -315,7 +315,7 @@ def getPitStats(player):
     out = {}
 
     if "pit_prestiges" in player["achievements"]:
-        prestige = roman(player["achievements"]["pit_prestiges"])
+        prestige = getRoman(player["achievements"]["pit_prestiges"])
     else:
         prestige = "None"
 
