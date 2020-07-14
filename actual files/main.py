@@ -543,7 +543,7 @@ class bot:
                     username = replyTo
                 utils.increment_dict(self.quotaChange,replyTo,1)
                 mode = "guild"
-                data = hypixelapi.getGuild(username,mode)
+                data = hypixelapi.getGuild(username)
                 raw = hypixelapi.convert(data,mode)
                 msg = msgformat.msg(raw)
                 while time.time() - self.command_delay < 0.7: time.sleep(0.05)
