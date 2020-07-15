@@ -467,8 +467,8 @@ class bot:
                     self.msgQueue = [{"msgMode":"guild","replyto":user, "username":args[0]}] + self.msgQueue
                 else:
                     self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
-            # elif len(args) > 1 and len(args) < 6:
-            #     self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "username":args, "mode":mode}] + self.msgQueue
+            elif len(args) > 1 and len(args) < 6 and mode != "guild":
+                self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "usernames":args, "mode":mode}] + self.msgQueue
             else:
                 self.msgQueue = [{"msgMode":"wrong_syntax", "user":user}] + self.msgQueue
         else:
@@ -563,25 +563,40 @@ class bot:
                         logging.info(f"Couldn't reply to {replyTo}")
                         self.msgError.append(replyTo)
                 self.currentChannel = ""
-                
 
-            ## NOT CURRENTLY SUPPORTED
-            # elif currentQueue["msgMode"] == "stats_multiple":
-                # while time.time()-self.command_delay < 0.6: time.sleep(0.05)
-                # self.chat("/r",0)
-                # replyTo = currentQueue["replyto"]
-                # usernames = currentQueue["username"]
-                # mode = currentQueue["mode"]
-                # utils.increment_dict(self.quotaChange,replyTo,len(usernames))
-                # output = {}
-                # for user in usernames:
-                #     data = hypixelapi.getPlayer(user,mode)
-                #     text = hypixelapi.convert(data,mode)["main"]
-                #     output[user] = text
-                # raws = [output[x] for x in list(output)]
-                # msgs = list(msgformat.party(raws,mode))
-                # while time.time()-self.command_delay < 0.7: time.sleep(0.05)
-                # for msg in msgs: self.chat(msg,0.4)
+            elif currentQueue["msgMode"] == "stats_multiple":
+                replyTo = currentQueue["replyto"]
+                if self.currentChannel != replyTo:
+                    while time.time()-self.command_delay < 0.6: time.sleep(0.05)
+                    self.chat("/r",0)
+                usernames = currentQueue["usernames"]
+                mode = currentQueue["mode"]
+                if replyTo in self.msg_config and mode == "":
+                    mode = self.msg_config[replyTo]
+                elif mode == "":
+                    mode = "oa"
+                utils.increment_dict(self.quotaChange,replyTo,1)
+                handle = utils.multithreading(usernames,mode)
+                handle.start()
+                raws = [handle.output[x] for x in list(handle.output)]
+                msgs = msgformat.party(raws,mode)
+                while time.time()-self.command_delay < 0.3: time.sleep(0.05)
+                if replyTo == self.currentChannel:
+                    logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {*usernames}")
+                    for msg in msgs: self.chat(msg,0.4)
+                    if replyTo in self.msgError:
+                        logging.info(f"{replyTo} --> Friend Warning")
+                        self.msgError.remove(replyTo)
+                        while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                else:
+                    if hypixelapi.canMsg(replyTo,self.username):
+                        logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {*usernames}")
+                        for msg in msgs: self.chat(msg,0.4)
+                    else:
+                        logging.info(f"Couldn't reply to {replyTo}")
+                        self.msgError.append(replyTo)
+                self.currentChannel = ""
 
             elif currentQueue["msgMode"] == "discord_request":
                 logging.info(f"Discord Request: {currentQueue['user']}")
