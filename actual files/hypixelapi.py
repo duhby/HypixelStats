@@ -123,11 +123,11 @@ def getGuild(name):
     api_key = nextKey()
     uuid = mojangapi.getUUID(name)
     if uuid == None:
-        return None
+        return {"stats":None,"username":name}
     try:
         guildid = requests.get(f"https://api.hypixel.net/findGuild?key={api_key}&byUuid={uuid}",timeout=api_timeout).json()["guild"]
         if guildid == None:
-            return None
+            return {"stats":None,"username":name}
         data = requests.get(f"https://api.hypixel.net/guild?key={api_key}&id={guildid}",timeout=api_timeout).json()["guild"]
     except Exception:
         logging.error("API Timeout! (hypixel)")
@@ -223,7 +223,7 @@ def convert(data,mode):
                 name = "n/a"
                 mode = name
             else:
-                main = "[{:<3}] Tag:{} Members:{} Desc:{}".format(stats["level"],stats["tag"],stats["members"],stats["description"][:16])
+                main = "[{:<3}] Tag:{} Members:{} Desc:{}".format(stats["level"],stats["tag"],stats["members"],stats["desc"][:16])
                 name = stats["name"]
                 mode = name
 
