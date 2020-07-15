@@ -122,8 +122,12 @@ def getPlayer(username,mode):
 def getGuild(name):
     api_key = nextKey()
     uuid = mojangapi.getUUID(name)
+    if uuid == None:
+        return None
     try:
         guildid = requests.get(f"https://api.hypixel.net/findGuild?key={api_key}&byUuid={uuid}",timeout=api_timeout).json()["guild"]
+        if guildid == None:
+            return None
         data = requests.get(f"https://api.hypixel.net/guild?key={api_key}&id={guildid}",timeout=api_timeout).json()["guild"]
     except Exception:
         logging.error("API Timeout! (hypixel)")
