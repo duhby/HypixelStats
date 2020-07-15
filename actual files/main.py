@@ -582,7 +582,7 @@ class bot:
                 msgs = msgformat.party(raws,mode)
                 while time.time()-self.command_delay < 0.3: time.sleep(0.05)
                 if replyTo == self.currentChannel:
-                    logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {*usernames}")
+                    logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
                     for msg in msgs: self.chat(msg,0.4)
                     if replyTo in self.msgError:
                         logging.info(f"{replyTo} --> Friend Warning")
@@ -591,7 +591,7 @@ class bot:
                         self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
                 else:
                     if hypixelapi.canMsg(replyTo,self.username):
-                        logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {*usernames}")
+                        logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
                         for msg in msgs: self.chat(msg,0.4)
                     else:
                         logging.info(f"Couldn't reply to {replyTo}")
