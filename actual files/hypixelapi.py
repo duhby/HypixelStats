@@ -45,8 +45,10 @@ def isFriended(username,bot):
     username = mojangapi.getUUID(username)
     try:
         friends = requests.get(f"https://api.hypixel.net/friends?key={apikey}&uuid={uuid}",timeout=api_timeout).json()
-    except Exception:
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
+        return False
+    else:
         return False
     if username in str(friends):
         return True
@@ -57,8 +59,11 @@ def canMsg(username,bot):
     apikey = nextKey()
     try:
         response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout).json()
-    except Exception:
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
+        return False
+    else:
+        return False
     settings = response["player"]["settings"]
     if settings["privateMessagePrivacy"] == "MAX":
         level = 4
@@ -83,8 +88,10 @@ def getPlayer(username,mode):
     apikey = nextKey()
     try:
         response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout)
-    except Exception:
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
+        return {}
+    else:
         return {}
     try:
         player = response.json()
@@ -129,8 +136,10 @@ def getGuild(name):
         if guildid == None:
             return {"stats":None,"username":name}
         data = requests.get(f"https://api.hypixel.net/guild?key={api_key}&id={guildid}",timeout=api_timeout).json()["guild"]
-    except Exception:
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
+        return {}
+    else:
         return {}
     
     try:
