@@ -462,7 +462,7 @@ class bot:
 
         # stats request
         if len(args) > 0 and len(args[0]) < 17:
-            elif len(args) == 1:
+            if len(args) == 1:
                 if mode == "guild":
                     self.msgQueue = [{"msgMode":"guild","replyto":user, "guild":args[0]}] + self.msgQueue
                 else:
