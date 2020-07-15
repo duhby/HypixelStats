@@ -119,6 +119,24 @@ def getPlayer(username,mode):
         logging.error(error)
         return {}
 
+def getGuild(name):
+    api_key = nextKey()
+    uuid = mojangapi.getUUID(name)
+    try:
+        guildid = requests.get(f"https://api.hypixel.net/findGuild?key={api_key}&byUuid={uuid}",timeout=api_timeout).json()["guild"]
+        data = requests.get(f"https://api.hypixel.net/guild?key={api_key}&id={guildid}",timeout=api_timeout).json()["guild"]
+    except Exception:
+        logging.error("API Timeout! (hypixel)")
+        return {}
+    
+    try:
+        out = {}
+        out["stats"] = getstats.getGuildStats(data)
+        return out
+    except Exception as error:
+        logging.error(error)
+        return {}
+
 def convert(data,mode):
     try:
         username = data["username"]
