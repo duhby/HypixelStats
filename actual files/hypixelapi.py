@@ -135,6 +135,7 @@ def getGuild(name):
     
     try:
         out = {}
+        out["username"] = name
         out["stats"] = getstats.getGuildStats(data)
         return out
     except Exception as error:
@@ -213,6 +214,17 @@ def convert(data,mode):
                 main = username + f" - Nicked? (No data) mode = {mode}"
             else:
                 main = "[{:<4}]{:12} KD:{} Highest KS:{}".format(stats["prestige"],username,stats["kd"],stats["max_streak"])
+        
+        elif "guild" in mode:
+            mode = "GUILD"
+            
+            if stats == None:
+                main = username + f" - This player is not in a guild! (or doesn't exist)"
+                return {"main":main,"name","n/a"}
+            else:
+                main = "[{:<3}] Tag:{} Members:{} Desc:{}".format(stats["level"],stats["tag"],stats["members"],stats["description"][:16])
+                return {"main":main,"name",stats["name"]}
+
 
         return {"main":main,"mode":mode}
 
