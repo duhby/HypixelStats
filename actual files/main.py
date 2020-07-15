@@ -412,7 +412,7 @@ class bot:
         elif "overall" in args[-1]:
             mode = "oa"
             del args[-1]
-        
+
         elif "guild" in args[-1]:
             mode = "guild"
             del args[-1]
@@ -523,7 +523,7 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
                 else:
                     if hypixelapi.canMsg(replyTo,self.username):
                         logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
@@ -532,7 +532,7 @@ class bot:
                         logging.info(f"Couldn't reply to {replyTo}")
                         self.msgError.append(replyTo)
                 self.currentChannel = ""
-            
+
             elif currentQueue["msgMode"] == "guild":
                 replyTo = currentQueue["replyto"]
                 if self.currentChannel != replyTo:
@@ -554,7 +554,7 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
                 else:
                     if hypixelapi.canMsg(replyTo,self.username):
                         logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
@@ -583,12 +583,14 @@ class bot:
                 while time.time()-self.command_delay < 0.3: time.sleep(0.05)
                 if replyTo == self.currentChannel:
                     logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
-                    for msg in msgs: self.chat(msg,0.4)
+                    for msg in msgs:
+                        self.chat(msg,0.4)
+                        while time.time()-self.command_delay < 0.8: time.sleep(0.05)
                     if replyTo in self.msgError:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
                 else:
                     if hypixelapi.canMsg(replyTo,self.username):
                         logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
@@ -622,7 +624,7 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
                 else:
                     if hypixelapi.canMsg(replyTo,self.username):
                         logging.info(f"Sniper Check: {user} --> {player}")
@@ -721,7 +723,7 @@ class bot:
                 logging.info("Overloaded!")
             else:
                 logging.info(f"Bot Load peaked at {load}%.")
-            
+
             self.chat("/whereami",0.2)
 
             self.current_load = 0
