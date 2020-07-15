@@ -223,7 +223,7 @@ def convert(data,mode):
                 name = "n/a"
                 mode = name
             else:
-                main = "[{:<3}] Tag:{} Members:{} Desc:{}".format(stats["level"],stats["tag"],stats["members"],stats["desc"][:16])
+                main = "[{:<3}] Tag:[{}] Members:{} Desc:{}".format(stats["level"],stats["tag"],stats["members"],stats["desc"][:16])
                 name = stats["name"]
                 mode = name
 
