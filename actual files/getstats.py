@@ -392,10 +392,19 @@ def getGuildStats(data):
     try:
         level = getGuildLevel(data["exp"])
         name = data["name"]
-        desc = data["description"]
+        description = data["description"]
         tag = data["tag"]
         members = len(data["members"])
+
     except Exception as error:
         logging.error(error)
         return None
-        
+
+    out = {}
+    out["level"] = level
+    out["name"] = name
+    out["desc"] = description
+    out["tag"] = tag
+    out["members"] = members
+
+    return out
