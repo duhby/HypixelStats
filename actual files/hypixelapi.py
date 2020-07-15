@@ -48,8 +48,6 @@ def isFriended(username,bot):
     except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
         return False
-    else:
-        return False
     if username in str(friends):
         return True
     else:
@@ -61,8 +59,6 @@ def canMsg(username,bot):
         response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout).json()
     except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
-        return False
-    else:
         return False
     settings = response["player"]["settings"]
     if settings["privateMessagePrivacy"] == "MAX":
@@ -90,8 +86,6 @@ def getPlayer(username,mode):
         response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout)
     except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
-        return {}
-    else:
         return {}
     try:
         player = response.json()
@@ -139,9 +133,7 @@ def getGuild(name):
     except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
         return {}
-    else:
-        return {}
-    
+
     try:
         out = {}
         out["username"] = name
@@ -153,6 +145,7 @@ def getGuild(name):
 
 def convert(data,mode):
     try:
+        print(data)
         username = data["username"]
         stats = data["stats"]
         main = ""
@@ -223,10 +216,10 @@ def convert(data,mode):
                 main = username + f" - Nicked? (No data) mode = {mode}"
             else:
                 main = "[{:<4}]{:12} KD:{} Highest KS:{}".format(stats["prestige"],username,stats["kd"],stats["max_streak"])
-        
+
         elif "guild" in mode:
             mode = "GUILD"
-            
+
             if stats == None:
                 main = username + f" - This player is not in a guild! (or doesn't exist)"
                 name = "n/a"
