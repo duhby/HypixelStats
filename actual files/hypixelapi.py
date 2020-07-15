@@ -220,10 +220,12 @@ def convert(data,mode):
             
             if stats == None:
                 main = username + f" - This player is not in a guild! (or doesn't exist)"
-                return {"main":main,"name","n/a"}
+                name = "n/a"
+                mode = name
             else:
                 main = "[{:<3}] Tag:{} Members:{} Desc:{}".format(stats["level"],stats["tag"],stats["members"],stats["description"][:16])
-                return {"main":main,"name",stats["name"]}
+                name = stats["name"]
+                mode = name
 
 
         return {"main":main,"mode":mode}
