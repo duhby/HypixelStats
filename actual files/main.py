@@ -575,7 +575,7 @@ class bot:
                     mode = self.msg_config[replyTo]
                 elif mode == "":
                     mode = "oa"
-                utils.increment_dict(self.quotaChange,replyTo,1)
+                utils.increment_dict(self.quotaChange,replyTo,len(usernames))
                 handle = utils.multithreading(usernames,mode)
                 handle.start()
                 raws = [handle.output[x] for x in list(handle.output)]
