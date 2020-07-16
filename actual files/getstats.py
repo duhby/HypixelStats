@@ -397,7 +397,6 @@ def getGuildStats(data):
         members = len(data["members"])
 
     except Exception as error:
-        logging.error(error)
         return None
 
     out = {}
