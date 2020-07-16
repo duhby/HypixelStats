@@ -216,6 +216,7 @@ def convert(data,mode):
             else:
                 main = "[{:<4}]{:12} KD:{} Highest KS:{}".format(stats["prestige"],username,stats["kd"],stats["max_streak"])
 
+        # guild
         elif "guild" in mode:
             mode = "GUILD"
 
