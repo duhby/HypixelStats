@@ -443,12 +443,22 @@ class bot:
                 except: pass
                 self.msgQueue = [{"msgMode":"reset_modes","user":user}] + self.msgQueue
 
+            elif cmd == "+settings":
+                try: msg_config = self.msg_config[user]
+                except: msg_config = "null"
+                try: party_config = self.party_config[user]
+                except: party_config = "null"
+                confs = {"msg":msg_config,"party":party_config}
+                self.msgQueue = [{"msgMode":"settings","user":user,"confs":confs}] + self.msgQueue
+
             elif cmd in ["+mode","+msgmode"]:
-                self.msg_config[user] = mode
+                if mode != "":
+                    self.msg_config[user] = mode
                 self.msgQueue = [{"msgMode":"msg_mode","user":user,"mode":mode}] + self.msgQueue
 
             elif cmd in ["+pmode","+partymode"]:
-                self.party_config[user] = mode
+                if mode != "":
+                    self.party_config[user] = mode
                 self.msgQueue = [{"msgMode":"party_mode","user":user,"mode":mode}] + self.msgQueue
 
             elif cmd == "+discord":
@@ -544,9 +554,8 @@ class bot:
                 if currentQueue["username"] == "me":
                     username = replyTo
                 utils.increment_dict(self.quotaChange,replyTo,1)
-                mode = "guild"
                 data = hypixelapi.getGuild(username)
-                raw = hypixelapi.convert(data,mode)
+                raw = hypixelapi.convert(data,"guild")
                 msg = msgformat.msg(raw)
                 while time.time() - self.command_delay < 0.7: time.sleep(0.05)
                 if replyTo == self.currentChannel:
@@ -661,6 +670,16 @@ class bot:
                     logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.party_mode(currentQueue["mode"]),0.5)
+            
+            elif currentQueue["msgMode"] == "settings":
+                logging.info(f"Settings: {currentQueue['user']}")
+                party = currentQueue["confs"]["party"]
+                msg = currentQueue["confs"]["msg"]
+                party = msgformat.displaymode(party)
+                msg = msgformat.displaymode(msg)
+                raw = {"main":f"MsgMode:{msg}   PartyMode:{party}","mode":"SETTINGS"}
+                while time.time()-self.command_delay < 0.5: time.sleep(0.05)
+                self.chat("/r " + msgformat.msg(raw))
 
     def party_tick(self):
         if len(self.partyQueue) > 0 and len(self.msgQueue) == 0:
