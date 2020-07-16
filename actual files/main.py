@@ -413,10 +413,6 @@ class bot:
             mode = "oa"
             del args[-1]
 
-        elif "guild" in args[-1]:
-            mode = "guild"
-            del args[-1]
-
         if len(args) == 0:
             args = [user.lower()]
 
@@ -428,7 +424,10 @@ class bot:
 
         # commands
         if "+" in msg:
-            cmd = args[0]
+            if "+guild" in args:
+                cmd = args[-1]
+            else:
+                cmd = args[0]
             length = len(args)
             if cmd == "+send" and user in self.ops:
                 self.commandQueue.append({"command":"send_command","send":" ".join(args[1:])})
@@ -455,6 +454,12 @@ class bot:
             elif cmd == "+discord":
                 self.msgQueue = [{"msgMode":"discord_request","user":user}]
 
+            elif cmd == "+guild":
+                del args[-1]
+                if len(args) == 0:
+                    args = [user.lower()]
+                self.msgQueue = [{"msgMode":"guild","replyto":user, "username":args[0]}] + self.msgQueue
+
             else:
                 self.msgQueue = [{"msgMode":"wrong_syntax","user":user}] + self.msgQueue
 
@@ -463,10 +468,7 @@ class bot:
         # stats request
         if len(args) > 0 and len(args[0]) < 17:
             if len(args) == 1:
-                if mode == "guild":
-                    self.msgQueue = [{"msgMode":"guild","replyto":user, "username":args[0]}] + self.msgQueue
-                else:
-                    self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
+                self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
             elif len(args) > 1 and len(args) < 6 and mode != "guild":
                 self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "usernames":args, "mode":mode}] + self.msgQueue
             else:
@@ -645,12 +647,18 @@ class bot:
                 self.chat("/r " + msgformat.reset_modes(),0.5)
 
             elif currentQueue["msgMode"] == "msg_mode":
-                logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
+                if currentQueue["mode"] == "":
+                    logging.info(f"Invalid Mode: {currentQueue['user']}")
+                else:
+                    logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.msg_mode(currentQueue["mode"]),0.5)
 
             elif currentQueue["msgMode"] == "party_mode":
-                logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
+                if currentQueue["mode"] == "":
+                    logging.info(f"Invalid Mode: {currentQueue['user']}")
+                else:
+                    logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.party_mode(currentQueue["mode"]),0.5)
 
