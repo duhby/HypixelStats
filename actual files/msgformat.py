@@ -99,7 +99,7 @@ def msg_mode(mode):
     if mode == "":
         return invalidmode()
 
-    return insertInvis(f"Got it! Next time you message me without defining  mode, I will show {mode} stats.")
+    return insertInvis(f"Got it! Next time you message me without defining a mode, I will show {mode} stats.")
 
 def party_mode(mode):
     mode = displaymode(mode)
