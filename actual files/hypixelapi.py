@@ -145,7 +145,6 @@ def getGuild(name):
 
 def convert(data,mode):
     try:
-        print(data)
         username = data["username"]
         stats = data["stats"]
         main = ""
