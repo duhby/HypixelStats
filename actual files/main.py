@@ -469,7 +469,7 @@ class bot:
         if len(args) > 0 and len(args[0]) < 17:
             if len(args) == 1:
                 self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
-            elif len(args) > 1 and len(args) < 6 and mode != "guild":
+            elif len(args) > 1 and len(args) < 6:
                 self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "usernames":args, "mode":mode}] + self.msgQueue
             else:
                 self.msgQueue = [{"msgMode":"wrong_syntax", "user":user}] + self.msgQueue
