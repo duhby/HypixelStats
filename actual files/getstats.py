@@ -12,6 +12,52 @@ def getSwLevel(exp):
         level += 1
     return level + exp // 10000
 
+# credit to people who made slothpixel
+# I still had to convert .js to .py and idk .js lol
+def getGuildLevel(exp):
+    exp_needed = [
+    100000,
+    150000,
+    250000,
+    500000,
+    750000,
+    1000000,
+    1250000,
+    1500000,
+    2000000,
+    2500000,
+    2500000,
+    2500000,
+    2500000,
+    2500000,
+    3000000,
+  ]
+
+    level = 0
+    
+    # Increments by one from zero to the level cap
+    # had to change to -1 because of the way it was
+    # written in .js
+    i = -1
+    while i <= 1000:
+        i += 1
+        need = 0
+        if i >= len(exp_needed):
+            need = exp_needed[len(exp_needed) - 1]
+        else: need = exp_needed[i]
+
+        # if the required exp to get to the next level isn't met, returns
+        # the current level plus progress towards the next (unused exp/need)
+        # otherwise increments the level and subtracts the used exp from exp var
+        if (exp - need) < 0:
+            return round((level + (exp / need)) * 100) / 100
+        level += 1
+        exp -= need
+
+    # if there is enough exp to iterate 1k times
+    # (the guild is level 1k+)
+    return 1000
+
 def getRoman(n):
     val = [10, 9, 5, 4, 1]
     syb = ["X", "IX", "V", "IV", "I"]
@@ -171,7 +217,6 @@ def getSwStats(player,mode):
 def getTkrStats(player):
     try: data = player["stats"]["GingerBread"]
     except: return None
-    out = {}
 
     if "laps_completed" in data:
         laps = data["laps_completed"]
@@ -215,6 +260,7 @@ def getTkrStats(player):
     else:
         br = 0
 
+    out = {}
     out["laps"] = laps
     # out["wins"] = wins
     out["gold_trophies"] = gold
@@ -312,7 +358,6 @@ def getDuelStats(player,mode):
 def getPitStats(player):
     try: data = player["stats"]["Pit"]["pit_stats_ptl"]
     except: return None
-    out = {}
 
     if "pit_prestiges" in player["achievements"]:
         prestige = getRoman(player["achievements"]["pit_prestiges"])
@@ -336,8 +381,29 @@ def getPitStats(player):
     else:
         highest_streak = 0
 
+    out = {}
     out["prestige"] = prestige
     out["kd"] = kd
     out["max_streak"] = highest_streak
+
+    return out
+
+def getGuildStats(data):
+    try:
+        level = getGuildLevel(data["exp"])
+        name = data["name"]
+        description = data["description"]
+        tag = data["tag"]
+        members = len(data["members"])
+
+    except Exception as error:
+        return None
+
+    out = {}
+    out["level"] = level
+    out["name"] = name
+    out["desc"] = description
+    out["tag"] = tag
+    out["members"] = members
 
     return out

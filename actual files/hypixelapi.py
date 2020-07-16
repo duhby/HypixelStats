@@ -45,7 +45,7 @@ def isFriended(username,bot):
     username = mojangapi.getUUID(username)
     try:
         friends = requests.get(f"https://api.hypixel.net/friends?key={apikey}&uuid={uuid}",timeout=api_timeout).json()
-    except Exception:
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
         return False
     if username in str(friends):
@@ -57,8 +57,9 @@ def canMsg(username,bot):
     apikey = nextKey()
     try:
         response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout).json()
-    except Exception:
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
+        return False
     settings = response["player"]["settings"]
     if settings["privateMessagePrivacy"] == "MAX":
         level = 4
@@ -83,7 +84,7 @@ def getPlayer(username,mode):
     apikey = nextKey()
     try:
         response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout)
-    except Exception:
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
         return {}
     try:
@@ -114,6 +115,29 @@ def getPlayer(username,mode):
             out["stats"] = getstats.getPitStats(player)
         elif "oa" in mode:
             out["stats"] = getstats.getOverallStats(player)
+        return out
+    except Exception as error:
+        logging.error(error)
+        return {}
+
+def getGuild(name):
+    api_key = nextKey()
+    uuid = mojangapi.getUUID(name)
+    if uuid == None:
+        return {"stats":None,"username":name}
+    try:
+        guildid = requests.get(f"https://api.hypixel.net/findGuild?key={api_key}&byUuid={uuid}",timeout=api_timeout).json()["guild"]
+        if guildid == None:
+            return {"stats":None,"username":name}
+        data = requests.get(f"https://api.hypixel.net/guild?key={api_key}&id={guildid}",timeout=api_timeout).json()["guild"]
+    except requests.exceptions.Timeout:
+        logging.error("API Timeout! (hypixel)")
+        return {}
+
+    try:
+        out = {}
+        out["username"] = name
+        out["stats"] = getstats.getGuildStats(data)
         return out
     except Exception as error:
         logging.error(error)
@@ -191,6 +215,20 @@ def convert(data,mode):
                 main = username + f" - Nicked? (No data) mode = {mode}"
             else:
                 main = "[{:<4}]{:12} KD:{} Highest KS:{}".format(stats["prestige"],username,stats["kd"],stats["max_streak"])
+
+        # guild
+        elif "guild" in mode:
+            mode = "GUILD"
+
+            if stats == None:
+                main = username + f" - This player is not in a guild! (or doesn't exist)"
+                name = "n/a"
+                mode = name
+            else:
+                main = "[{:<3}] Tag:[{}] Members:{} Desc:{}".format(stats["level"],stats["tag"],stats["members"],stats["desc"][:16])
+                name = stats["name"]
+                mode = name
+
 
         return {"main":main,"mode":mode}
 

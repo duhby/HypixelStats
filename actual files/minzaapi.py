@@ -28,6 +28,6 @@ def isSniper(player):
         text = text.lower()
         text = json.loads(text)
         return text
-    except:
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (minutebrain)")
     return False

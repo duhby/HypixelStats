@@ -424,7 +424,10 @@ class bot:
 
         # commands
         if "+" in msg:
-            cmd = args[0]
+            if "+guild" in args:
+                cmd = args[-1]
+            else:
+                cmd = args[0]
             length = len(args)
             if cmd == "+send" and user in self.ops:
                 self.commandQueue.append({"command":"send_command","send":" ".join(args[1:])})
@@ -440,16 +443,32 @@ class bot:
                 except: pass
                 self.msgQueue = [{"msgMode":"reset_modes","user":user}] + self.msgQueue
 
+            elif cmd == "+settings":
+                try: msg_config = self.msg_config[user]
+                except: msg_config = "null"
+                try: party_config = self.party_config[user]
+                except: party_config = "null"
+                confs = {"msg":msg_config,"party":party_config}
+                self.msgQueue = [{"msgMode":"settings","user":user,"confs":confs}] + self.msgQueue
+
             elif cmd in ["+mode","+msgmode"]:
-                self.msg_config[user] = mode
+                if mode != "":
+                    self.msg_config[user] = mode
                 self.msgQueue = [{"msgMode":"msg_mode","user":user,"mode":mode}] + self.msgQueue
 
             elif cmd in ["+pmode","+partymode"]:
-                self.party_config[user] = mode
+                if mode != "":
+                    self.party_config[user] = mode
                 self.msgQueue = [{"msgMode":"party_mode","user":user,"mode":mode}] + self.msgQueue
 
             elif cmd == "+discord":
                 self.msgQueue = [{"msgMode":"discord_request","user":user}]
+
+            elif cmd == "+guild":
+                del args[-1]
+                if len(args) == 0:
+                    args = [user.lower()]
+                self.msgQueue = [{"msgMode":"guild","replyto":user, "username":args[0]}] + self.msgQueue
 
             else:
                 self.msgQueue = [{"msgMode":"wrong_syntax","user":user}] + self.msgQueue
@@ -460,8 +479,8 @@ class bot:
         if len(args) > 0 and len(args[0]) < 17:
             if len(args) == 1:
                 self.msgQueue = [{"msgMode":"stats","replyto":user, "username":args[0], "mode":mode}] + self.msgQueue
-            # elif len(args) > 1 and len(args) < 6:
-            #     self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "username":args, "mode":mode}] + self.msgQueue
+            elif len(args) > 1 and len(args) < 6:
+                self.msgQueue = [{"msgMode":"stats_multiple", "replyto":user, "usernames":args, "mode":mode}] + self.msgQueue
             else:
                 self.msgQueue = [{"msgMode":"wrong_syntax", "user":user}] + self.msgQueue
         else:
@@ -516,7 +535,7 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
                 else:
                     if hypixelapi.canMsg(replyTo,self.username):
                         logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
@@ -526,23 +545,71 @@ class bot:
                         self.msgError.append(replyTo)
                 self.currentChannel = ""
 
-            ## NOT CURRENTLY SUPPORTED
-            # elif currentQueue["msgMode"] == "stats_multiple":
-                # while time.time()-self.command_delay < 0.6: time.sleep(0.05)
-                # self.chat("/r",0)
-                # replyTo = currentQueue["replyto"]
-                # usernames = currentQueue["username"]
-                # mode = currentQueue["mode"]
-                # utils.increment_dict(self.quotaChange,replyTo,len(usernames))
-                # output = {}
-                # for user in usernames:
-                #     data = hypixelapi.getPlayer(user,mode)
-                #     text = hypixelapi.convert(data,mode)["main"]
-                #     output[user] = text
-                # raws = [output[x] for x in list(output)]
-                # msgs = list(msgformat.party(raws,mode))
-                # while time.time()-self.command_delay < 0.7: time.sleep(0.05)
-                # for msg in msgs: self.chat(msg,0.4)
+            elif currentQueue["msgMode"] == "guild":
+                replyTo = currentQueue["replyto"]
+                if self.currentChannel != replyTo:
+                    while time.time()-self.command_delay<0.5: time.sleep(0.05)
+                    self.chat("/r",0)
+                username = currentQueue["username"].lower()
+                if currentQueue["username"] == "me":
+                    username = replyTo
+                utils.increment_dict(self.quotaChange,replyTo,1)
+                data = hypixelapi.getGuild(username)
+                raw = hypixelapi.convert(data,"guild")
+                msg = msgformat.msg(raw)
+                while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                if replyTo == self.currentChannel:
+                    logging.info(f"Guild Stats: {replyTo} --> {username}")
+                    self.chat(msg,0.4)
+                    if replyTo in self.msgError:
+                        logging.info(f"{replyTo} --> Friend Warning")
+                        self.msgError.remove(replyTo)
+                        while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
+                else:
+                    if hypixelapi.canMsg(replyTo,self.username):
+                        logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
+                        self.chat(f"/msg {replyTo} {msg}",0.4)
+                    else:
+                        logging.info(f"Couldn't reply to {replyTo}")
+                        self.msgError.append(replyTo)
+                self.currentChannel = ""
+
+            elif currentQueue["msgMode"] == "stats_multiple":
+                replyTo = currentQueue["replyto"]
+                if self.currentChannel != replyTo:
+                    while time.time()-self.command_delay < 0.6: time.sleep(0.05)
+                    self.chat("/r",0)
+                usernames = currentQueue["usernames"]
+                mode = currentQueue["mode"]
+                if replyTo in self.msg_config and mode == "":
+                    mode = self.msg_config[replyTo]
+                elif mode == "":
+                    mode = "oa"
+                utils.increment_dict(self.quotaChange,replyTo,len(usernames))
+                handle = utils.multithreading(usernames,mode)
+                handle.start()
+                raws = [handle.output[x] for x in list(handle.output)]
+                msgs = msgformat.party(raws,mode)
+                while time.time()-self.command_delay < 0.3: time.sleep(0.05)
+                if replyTo == self.currentChannel:
+                    logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
+                    for msg in msgs:
+                        self.chat(msg,0.4)
+                        while time.time()-self.command_delay < 0.8: time.sleep(0.05)
+                    if replyTo in self.msgError:
+                        logging.info(f"{replyTo} --> Friend Warning")
+                        self.msgError.remove(replyTo)
+                        while time.time() - self.command_delay < 0.7: time.sleep(0.05)
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
+                else:
+                    if hypixelapi.canMsg(replyTo,self.username):
+                        logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
+                        for msg in msgs: self.chat(msg,0.4)
+                    else:
+                        logging.info(f"Couldn't reply to {replyTo}")
+                        self.msgError.append(replyTo)
+                self.currentChannel = ""
 
             elif currentQueue["msgMode"] == "discord_request":
                 logging.info(f"Discord Request: {currentQueue['user']}")
@@ -568,7 +635,7 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4)
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
                 else:
                     if hypixelapi.canMsg(replyTo,self.username):
                         logging.info(f"Sniper Check: {user} --> {player}")
@@ -589,14 +656,30 @@ class bot:
                 self.chat("/r " + msgformat.reset_modes(),0.5)
 
             elif currentQueue["msgMode"] == "msg_mode":
-                logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
+                if currentQueue["mode"] == "":
+                    logging.info(f"Invalid Mode: {currentQueue['user']}")
+                else:
+                    logging.info(f"Message Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.msg_mode(currentQueue["mode"]),0.5)
 
             elif currentQueue["msgMode"] == "party_mode":
-                logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
+                if currentQueue["mode"] == "":
+                    logging.info(f"Invalid Mode: {currentQueue['user']}")
+                else:
+                    logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.party_mode(currentQueue["mode"]),0.5)
+            
+            elif currentQueue["msgMode"] == "settings":
+                logging.info(f"Settings: {currentQueue['user']}")
+                party = currentQueue["confs"]["party"]
+                msg = currentQueue["confs"]["msg"]
+                party = msgformat.displaymode(party)
+                msg = msgformat.displaymode(msg)
+                raw = {"main":f"MsgMode:{msg}   PartyMode:{party}","mode":"SETTINGS"}
+                while time.time()-self.command_delay < 0.5: time.sleep(0.05)
+                self.chat("/r " + msgformat.msg(raw))
 
     def party_tick(self):
         if len(self.partyQueue) > 0 and len(self.msgQueue) == 0:
@@ -662,13 +745,14 @@ class bot:
         if time.time() - self.info_delay > 60:
             self.info_delay = time.time()
 
-            self.chat("/whereami",0.2)
-
             load = round((self.current_load/self.rate)*100)
             if self.current_load > self.rate:
                 logging.info("Overloaded!")
             else:
                 logging.info(f"Bot Load peaked at {load}%.")
+
+            self.chat("/whereami",0.2)
+
             self.current_load = 0
 
     def file_tick(self):

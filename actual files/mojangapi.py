@@ -21,16 +21,23 @@ api_timeout = 4 # in seconds
 def getUUID(user):
     try:
         response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{user}",timeout=api_timeout).json()
-        return response["id"]
-    except:
+        if "id" in response:
+            return response["id"]
+        else:
+            return None
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (mojang)")
-        return None
+    
+    return None
 
 def correctCaps(user):
     try:
         response = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{user}",timeout=api_timeout).json()
-        return response["name"]
-    except Exception as error:
-        print(error)
+        if "name" in response:
+            return response["name"]
+        else:
+            return user
+    except requests.exceptions.Timeout:
         logging.error("API Timeout! (mojang)")
-        return user
+    
+    return user
