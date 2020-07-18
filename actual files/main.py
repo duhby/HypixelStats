@@ -516,8 +516,6 @@ class bot:
                     while time.time()-self.command_delay<0.5: time.sleep(0.05)
                     self.chat("/r",0)
                 username = currentQueue["username"].lower()
-                if currentQueue["username"] == "me":
-                    username = replyTo
                 mode = currentQueue["mode"]
                 if replyTo in self.msg_config and mode == "":
                     mode = self.msg_config[replyTo]
@@ -551,8 +549,6 @@ class bot:
                     while time.time()-self.command_delay<0.5: time.sleep(0.05)
                     self.chat("/r",0)
                 username = currentQueue["username"].lower()
-                if currentQueue["username"] == "me":
-                    username = replyTo
                 utils.increment_dict(self.quotaChange,replyTo,1)
                 data = hypixelapi.getGuild(username)
                 raw = hypixelapi.convert(data,"guild")
