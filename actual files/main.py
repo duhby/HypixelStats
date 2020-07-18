@@ -415,6 +415,11 @@ class bot:
 
         if len(args) == 0:
             args = [user.lower()]
+        
+        if user in self.msg_config and mode == "":
+            mode = self.msg_config[user]
+        elif mode == "":
+            mode = "oa"
 
         # user = 'FatDubs'
         # args = ['fatdubs']
@@ -517,10 +522,6 @@ class bot:
                     self.chat("/r",0)
                 username = currentQueue["username"].lower()
                 mode = currentQueue["mode"]
-                if replyTo in self.msg_config and mode == "":
-                    mode = self.msg_config[replyTo]
-                elif mode == "":
-                    mode = "oa"
                 utils.increment_dict(self.quotaChange,replyTo,1)
                 data = hypixelapi.getPlayer(username,mode)
                 raw = hypixelapi.convert(data,mode)
@@ -578,10 +579,6 @@ class bot:
                     self.chat("/r",0)
                 usernames = currentQueue["usernames"]
                 mode = currentQueue["mode"]
-                if replyTo in self.msg_config and mode == "":
-                    mode = self.msg_config[replyTo]
-                elif mode == "":
-                    mode = "oa"
                 utils.increment_dict(self.quotaChange,replyTo,len(usernames))
                 handle = utils.multithreading(usernames,mode)
                 handle.start()
