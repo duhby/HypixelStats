@@ -415,11 +415,12 @@ class bot:
 
         if len(args) == 0:
             args = [user.lower()]
-        
-        if user in self.msg_config and mode == "":
-            mode = self.msg_config[user]
-        elif mode == "":
-            mode = "oa"
+
+        if "+" not in msg or "+start" in msg:
+            if user in self.msg_config and mode == "":
+                mode = self.msg_config[user]
+            elif mode == "":
+                mode = "oa"
 
         # user = 'FatDubs'
         # args = ['fatdubs']
