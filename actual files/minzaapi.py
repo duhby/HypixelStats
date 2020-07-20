@@ -22,7 +22,7 @@ logging.basicConfig(
 
 def isSniper(player):
     try:
-        response = requests.get(f"http://161.35.53.44:8080/?playerv3={player}",timeout=api_timeout)
+        response = requests.get(f"http://161.35.53.44:8080/?playerv5={player}",timeout=api_timeout)
         text = response.text
         text = text.replace("\'","\"")
         text = text.lower()
