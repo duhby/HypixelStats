@@ -73,7 +73,7 @@ def party_too_large():
     return insertInvis(" ".join(pack))
 
 def discordmsg():
-    discmsgs = ["'/w _stats +discord' for a full list of features!","'/w _stats +discord' for feature requests!","'/w _stats +discord' for an uptime viewer!","'/w _stats +discord' for a TODO list!"]
+    discmsgs = ["'/w _stats +discord' for a full list of features!","'/w _stats +discord' for feature requests!      ","'/w _stats +discord' for an uptime viewer!    ","'/w _stats +discord' for a TODO list!                      "]
     return random.choice(discmsgs)
 
 def discord_request():
