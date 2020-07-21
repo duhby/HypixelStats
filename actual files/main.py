@@ -40,6 +40,7 @@ import pickle  # used to write and read files
 import sys     # used for the sys.exit() function
 import json    # used to grab chat data from packets
 import random  # used to randomize things
+import secrets # used to get a random id for recent stats functions
 
 # class for utilities that are used frequently
 # and would be messy if used in the main class
@@ -133,6 +134,7 @@ class bot:
         self.msgQueue = []      # holds the queue for messages to send
         self.partyQueue = []    # holds the queue for parties to accept
         self.commandQueue = []  # holds the queue for commands to send
+        self.dbQueue = []       # holds the queue for the stats database functions
         self.command_delay = 0  # prevents sending commands too fast
         self.inParty = {"in":False,"from":"","timestamp":0}
         self.currentChannel = ""   # makes sure the correct user is getting the correct message
@@ -155,6 +157,7 @@ class bot:
         self.ops = ["FatDubs","gamerboy80"]  # holds the data for operators of the bot (case sensitive)
         self.quota = utils.load_obj("quota") # holds the amount of unique users and requests each user has
         self.quotaChange = {} # temporarily holds quota data to get added to self.quota during a hb
+        self.statsdb = utils.load_obj("statsdb") # holds the database for the old stats of players'
         topusers = {k: v for k, v in sorted(self.quota.items(), key=lambda item: item[1], reverse=True)}
         topusers = utils.clean_msg(str(topusers))
         topusers = topusers.split(" ")
@@ -476,6 +479,15 @@ class bot:
                     args = [user.lower()]
                 self.msgQueue = [{"msgMode":"guild","replyto":user, "username":args[0]}] + self.msgQueue
 
+            elif cmd == "+start" and len(args) == 1:
+                id = f"#{secrets.token_hex(3).upper()}"
+                while id in self.statsdb: id = f"#{secrets.token_hex(3).upper()}"
+                self.dbQueue.append({"dbMode":"start","id":id,"user":user,"mode":mode})
+            
+            elif cmd == "+get" and len(args) == 2:
+                id = args[1]
+                self.dbQueue.append({"dbMode":"get","id":id,"user":user})
+
             else:
                 self.msgQueue = [{"msgMode":"wrong_syntax","user":user}] + self.msgQueue
 
@@ -716,6 +728,39 @@ class bot:
             self.chat("/p leave",0.3)
             self.inParty["in"] = False
 
+    def db_tick(self):
+        if len(self.dbQueue) > 0 and len(self.msgQueue) == 0:
+            currentQueue = self.dbQueue.pop(0)
+            if currentQueue["dbMode"] == "start":
+                id = currentQueue["id"]
+                user = currentQueue["user"]
+                mode = currentQueue["mode"]
+                stats = hypixelapi.getPlayer(user,mode)
+                if stats == {}:
+                    self.msgQueue = [{"msgMode":"error","user":user}] + self.msgQueue
+                    return
+                self.statsdb[id] = {"mode":mode,"user":user,"stats":stats["stats"]}
+                self.msgQueue = [{"msgMode":"db_start","user":user,"id":id}] + self.msgQueue
+                logging.info(f"Database Add: {user} - {msgformat.displaymode(mode)}")
+
+            elif currentQueue["dbMode"] == "get":
+                id = currentQueue["id"]
+                if id not in self.statsdb:
+                    self.msgQueue = [{"msgMode":"invalid_id","user":user,"id":id}] + self.msgQueue
+                    logging.info(f"Invalid ID: {currentQueue['user']}")
+                    return
+                user = currentQueue["user"]
+                mode = self.statsdb[id]["mode"]
+                oldstats = self.statsdb[id]["stats"]
+                newstats = hypixelapi.getPlayer(user,mode)
+                if newstats == {}:
+                    self.msgQueue = [{"msgMode":"error","user":user}] + self.msgQueue
+                    return
+                stats = {"new":newstats,"old":oldstats,"mode":mode,"id":id}
+                self.msgQueue = [{"msgMode":"db_get","user":user,"stats":stats}]
+                logging.info(f"Database Get: {user} - {id}")
+
+
     def command_tick(self):
         if len(self.commandQueue) > 0:
             currentQueue = self.commandQueue.pop(0)
@@ -751,14 +796,18 @@ class bot:
 
     def file_tick(self):
         if time.time() - self.file_delay > 120:
-            self.file_delay = time.time()
-            self.quota = utils.load_obj("quota")
-            utils.combine_dict(self.quota,self.quotaChange)
-            utils.save_obj(self.quota,"quota")
-            self.quotaChange = {}
-            utils.save_obj(self.party_config,"party_conf")
-            utils.save_obj(self.msg_config,"message_conf")
-            logging.info("Files updated successfully.")
+            try:
+                self.file_delay = time.time()
+                self.quota = utils.load_obj("quota")
+                utils.combine_dict(self.quota,self.quotaChange)
+                utils.save_obj(self.quota,"quota")
+                self.quotaChange = {}
+                utils.save_obj(self.party_config,"party_conf")
+                utils.save_obj(self.msg_config,"message_conf")
+                utils.save_obj(self.statsdb,"statsdb")
+                logging.info("Files updated successfully.")
+            except Exception as error:
+                logging.error(f"Failed to save files! - {error}")
 
     def tick(self):
         if time.time() - self.last_connection > 10 and self.login_attempt < 3:
@@ -771,6 +820,7 @@ class bot:
         try:
             self.party_tick()
             self.msg_tick()
+            self.db_tick()
             self.command_tick()
             self.cooldown_tick()
             self.file_tick()
