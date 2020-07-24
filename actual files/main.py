@@ -412,7 +412,7 @@ class bot:
         elif "pit" in args[-1:]:
             mode = "pit"
             del args[-1]
-        elif "overall" in args[-1]:
+        elif "overall" in args[-1] or "oa" in args[-1]:
             mode = "oa"
             del args[-1]
 
@@ -423,7 +423,7 @@ class bot:
             if user in self.msg_config and mode == "":
                 mode = self.msg_config[user]
             elif mode == "":
-                mode = "oa"
+                mode = "bw0"
 
         # user = 'FatDubs'
         # args = ['fatdubs']
@@ -707,7 +707,7 @@ class bot:
                         if self.inParty["from"] in self.party_config:
                             mode = self.party_config[self.inParty["from"]]
                         else:
-                            mode = "oa"
+                            mode = "bw0"
                         handle = utils.multithreading(users,mode)
                         handle.start()
                         raws = [handle.output[x] for x in list(handle.output)]
