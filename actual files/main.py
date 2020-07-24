@@ -841,12 +841,17 @@ class thread:
         self.bot = bot(self.email,self.password,self.username,self.rate)
         self.bot.initialize()
         while True:
-            time.sleep(0.05)
-            self.bot.tick()
-            if self.bot.muted:
-                if int(self.bot.unmute_time-time.time()) > 0:
-                    if time.time() - self.mutedelay >= 360:
-                        self.mutedelay = time.time()
-                        logging.critical("Muted: " + str(self.bot.mute_duration))
-                else:
-                    self.muted = self.bot.muted = False
+            try:
+                time.sleep(0.05)
+                self.bot.tick()
+                if self.bot.muted:
+                    if int(self.bot.unmute_time-time.time()) > 0:
+                        if time.time() - self.mutedelay >= 360:
+                            self.mutedelay = time.time()
+                            logging.critical("Muted: " + str(self.bot.mute_duration))
+                    else:
+                        self.muted = self.bot.muted = False
+            except Exception as error:
+                logging.error(f"Unknown error! {error}")
+                time.sleep(5)
+                self.bot.initialize()
