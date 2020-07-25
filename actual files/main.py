@@ -836,10 +836,13 @@ class thread:
         self.password = password
         self.username = username
         self.rate     = int(rate)
-
-    def start(self):
+    
+    def initialize(self):
         self.bot = bot(self.email,self.password,self.username,self.rate)
         self.bot.initialize()
+
+    def start(self):
+        self.initialize()
         while True:
             try:
                 time.sleep(0.05)
@@ -854,4 +857,4 @@ class thread:
             except Exception as error:
                 logging.error(f"Unknown error! {error}")
                 time.sleep(5)
-                self.bot.initialize()
+                self.initialize()
