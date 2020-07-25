@@ -811,7 +811,7 @@ class bot:
 
     def tick(self):
         if time.time() - self.last_connection > 10 and self.login_attempt < 3:
-            self.login_attmpet += 1
+            self.login_attempt += 1
             self.last_connection = time.time()
             try: self.disconnect()
             except Exception: pass
