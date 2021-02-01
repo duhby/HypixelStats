@@ -9,8 +9,8 @@ import bot
 
 def main():
     config = yaml.safe_load(open(config.yml))
-    bot = bot.thread(config['email'],config['password'],config['rate'])
-    bot.start()    
+    bot = bot.thread(config['email'],config['password'],config['rate'],config['admins'])
+    bot.start()
 
 
 if __name__ == "__main__":
