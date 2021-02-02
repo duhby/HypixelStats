@@ -1,6 +1,6 @@
-[![HitCount](http://hits.dwyl.com/FatDubs/HypixelStats.svg)](http://hits.dwyl.com/FatDubs/HypixelStats)
 [![Discord](https://img.shields.io/discord/719949131497603123.svg?color=%237289da&label=discord&logo=discord&style=flat-square)](https://discord.gg/PtsBc4b)
 [![Documentation](https://img.shields.io/badge/docs-dubs.rip-brightgreen?style=flat-square)](https://hystats.dubs.rip)
+[![HitCount](http://hits.dwyl.com/FatDubs/HypixelStats.svg)](http://hits.dwyl.com/FatDubs/HypixelStats)
 
 # HypixelStats
 
