@@ -11,6 +11,7 @@
 class Player:
     class Arcade:
         class CaptureTheWool:
+            # api
             def captures(player_data):
                 return player_data.get('achievements').get('arcade_ctw_oh_sheep',0)
 
@@ -181,6 +182,7 @@ class Player:
 
 
         class Doubles:
+            # api
             def beds_broken(player_data):
                 return player_data.get('stats').get('Bedwars').get('eight_two_beds_broken_bedwars',0)
 
@@ -229,6 +231,7 @@ class Player:
 
 
         class Threes:
+            # api
             def beds_broken(player_data):
                 return player_data.get('stats').get('Bedwars').get('four_three_beds_broken_bedwars',0)
 
@@ -277,6 +280,7 @@ class Player:
 
 
         class Fours:
+            # api
             def beds_broken(player_data):
                 return player_data.get('stats').get('Bedwars').get('four_four_beds_broken_bedwars',0)
 
@@ -325,6 +329,7 @@ class Player:
 
 
         class Teams:
+            # api
             def beds_broken(player_data):
                 return player_data.get('stats').get('Bedwars').get('two_four_beds_broken_bedwars',0)
 
