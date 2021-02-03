@@ -9,222 +9,222 @@
 ## suggest it in my discord or DM me @dubs#9025.
 
 
-class player:
+class Player:
     def __init__(self, player):
         self.player = player
 
 
-    class arcade:
-        class captureTheWool:
-            None
+    class Arcade:
+        class CaptureTheWool:
+            pass
 
-        class hypixelSays:
-            None
+        class HypixelSays:
+            pass
 
-        class miniWalls:
-            None
+        class MiniWalls:
+            pass
 
-        class partyGames:
-            None
+        class PartyGames:
+            pass
 
         #UNSUPPORTED# (for the remainder of the arcade gamemodes)
 
 
     #UNSUPPORTED#
-    class arenaBrawl:
-        None
+    class ArenaBrawl:
+        pass
 
 
-    class bedwars:
-        class solo:
-            None
+    class Bedwars:
+        class Solo:
+            pass
 
-        class doubles:
-            None
+        class Doubles:
+            pass
 
-        class threes:
-            None
+        class Threes:
+            pass
 
-        class fours:
-            None
+        class Fours:
+            pass
 
 
         #UNSUPPORTED#
-        class dreams:
-            class armed:
-                None
+        class Dreams:
+            class Armed:
+                pass
 
-            class castle:
-                None
+            class Castle:
+                pass
 
-            class lucky:
-                None
+            class Lucky:
+                pass
 
-            class rush:
-                None
+            class Rush:
+                pass
 
-            class ultimate:
-                None
+            class Ultimate:
+                pass
 
-            class voidless:
-                None
-
-
-    #UNSUPPORTED#
-    class blitz:
-        None
+            class Voidless:
+                pass
 
 
     #UNSUPPORTED#
-    class buildBattle:
-        None
+    class Blitz:
+        pass
 
 
     #UNSUPPORTED#
-    class copsAndCrims:
-        None
+    class BuildBattle:
+        pass
 
 
     #UNSUPPORTED#
-    class crazyWalls:
-        None
+    class BopsAndCrims:
+        pass
 
 
-    class duels:
-        class blitz:
-            None
-
-        class bow:
-            None
-
-        class bridge:
-            None
-
-        class classic:
-            None
-
-        class noDebuff:
-            None
-
-        class op:
-            None
-
-        class skywars:
-            None
-
-        class sumo:
-            None
-
-        class uhc:
-            None
+    #UNSUPPORTED#
+    class CrazyWalls:
+        pass
 
 
-    class megaWalls:
-        None
+    class Duels:
+        class Blitz:
+            pass
+
+        class Bow:
+            pass
+
+        class Bridge:
+            pass
+
+        class Classic:
+            pass
+
+        class NoDebuff:
+            pass
+
+        class OP:
+            pass
+
+        class Skywars:
+            pass
+
+        class Sumo:
+            pass
+
+        class UHC:
+            pass
 
 
-    class murderMystery:
-        class classic:
-            None
+    class MegaWalls:
+        pass
+
+
+    class MurderMystery:
+        class Classic:
+            pass
 
         #UNSUPPORTED#
-        class assassins:
-            None
+        class Assassins:
+            pass
 
         #UNSUPPORTED#
-        class doubleUp:
-            None
+        class DoubleUp:
+            pass
 
         #UNSUPPORTED#
-        class infection:
-            None
+        class Infection:
+            pass
 
 
     #UNSUPPORTED#
-    class paintball:
-        None
+    class Paintball:
+        pass
 
 
     #UNSUPPORTED#
-    class quake:
-        None
+    class Quake:
+        pass
 
 
     #UNSUPPORTED#
-    class skyclash:
-        None
+    class Skyclash:
+        pass
 
 
-    class skywars:
-        class ranked:
-            None
+    class Skywars:
+        class Ranked:
+            pass
 
-        class soloNormal:
-            None
+        class SoloNormal:
+            pass
 
-        class soloInsane:
-            None
+        class SoloInsane:
+            pass
 
-        class teamNormal:
-            None
+        class TeamNormal:
+            pass
 
-        class teamInsane:
-            None
-
-
-    #UNSUPPORTED#
-    class smashHeroes:
-        None
+        class TeamInsane:
+            pass
 
 
     #UNSUPPORTED#
-    class speedUHC:
-        None
+    class SmashHeroes:
+        pass
 
 
-    class tkr:
-        None
+    #UNSUPPORTED#
+    class SpeedUHC:
+        pass
 
 
-    class tntGames:
-        class tntRun:
-            None
+    class TurboKartRacers:
+        pass
+
+
+    class TntGames:
+        class TntRun:
+            pass
 
         #UNSUPPORTED#
-        class pvpRun:
-            None
+        class PvpRun:
+            pass
 
-        class tntTag:
-            None
+        class TntTag:
+            pass
 
         #UNSUPPORTED#
-        class bowSpleef:
-            None
+        class BowSpleef:
+            pass
 
         #UNSUPPORTED#
         class Wizards:
-            None
+            pass
 
 
     class UHC:
-        class solo:
-            None
+        class Solo:
+            pass
 
         #UNSUPPORTED#
-        class team:
-            None
+        class Team:
+            pass
 
 
     #UNSUPPORTED#
-    class vampirez:
-        None
+    class VampireZ:
+        pass
 
 
     #UNSUPPORTED#
-    class walls:
-        None
+    class Walls:
+        pass
 
 
     #UNSUPPORTED#
-    class warLords:
-        None
+    class WarLords:
+        pass
