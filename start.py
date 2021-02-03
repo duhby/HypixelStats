@@ -3,13 +3,13 @@
 # 1/31/21
 
 import yaml
-import bot
+from bot import Thread
 ##TODO: add logging
 #import logging
 
 def main():
     config = yaml.safe_load(open('config.yml'))
-    bot = bot.thread(config['email'],config['password'],config['rate'],config['admins'])
+    bot = bot.Thread(config['email'],config['password'],config['rate'],config['admins'])
     bot.start()
 
 
