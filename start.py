@@ -8,7 +8,7 @@ import bot
 #import logging
 
 def main():
-    config = yaml.safe_load(open(config.yml))
+    config = yaml.safe_load(open('config.yml'))
     bot = bot.thread(config['email'],config['password'],config['rate'],config['admins'])
     bot.start()
 
