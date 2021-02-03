@@ -1,6 +1,6 @@
 email: email@example.com
 password: Password123
-rate: 120
+rate: 120 # api requests allowed per minute
 admins:
     - FatDubs
     - gamerboy80
