@@ -6,7 +6,7 @@
 #import logging
 import minecraft
 
-class bot:
+class Bot:
     def __init__(self,email,password,rate,admins):
         self.email = email
         self.password = password
@@ -20,7 +20,7 @@ class bot:
         ##
 
 
-class thread:
+class Thread:
     def __init__(self,email,password,rate,admins):
         self.email = email
         self.password = password
