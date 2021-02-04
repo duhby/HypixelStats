@@ -11,21 +11,20 @@
 class Player:
     class Arcade:
         class CaptureTheWool:
-            # api
             def captures(player_data):
-                return player_data.get('achievements').get('arcade_ctw_oh_sheep',0)
+                return player_data.get('achievements',{}).get('arcade_ctw_oh_sheep',0)
 
             def kills_and_assists(player_data):
-                return player_data.get('achievements').get('arcade_ctw_slayer',0)
+                return player_data.get('achievements',{}).get('arcade_ctw_slayer',0)
 
 
         class HypixelSays:
             # api
             def rounds(player_data):
-                return player_data.get('stats').get('Arcade').get('rounds_simon_says',0)
+                return player_data.get('stats',{}).get('Arcade',{}).get('rounds_simon_says',0)
 
             def wins(player_data):
-                return player_data.get('stats').get('Arcade').get('wins_simon_says',0)
+                return player_data.get('stats',{}).get('Arcade',{}).get('wins_simon_says',0)
 
             # math
             def losses(player_data):
@@ -44,13 +43,13 @@ class Player:
         class PartyGames:
             # api
             def wins(player_data):
-                return player_data.get('stats').get('Arcade').get('wins_party',0)
+                return player_data.get('stats',{}).get('Arcade',{}).get('wins_party',0)
 
             def wins_2(player_data):
-                return player_data.get('stats').get('Arcade').get('wins_party_2',0)
+                return player_data.get('stats',{}).get('Arcade',{}).get('wins_party_2',0)
 
             def wins_3(player_data):
-                return player_data.get('stats').get('Arcade').get('wins_party_3',0)
+                return player_data.get('stats',{}).get('Arcade',{}).get('wins_party_3',0)
 
             # math
             def total_wins(player_data):
@@ -74,10 +73,10 @@ class Player:
     class Bedwars:
         # api
         def level(player_data):
-            return player_data.get('achievements').get('bedwars_level',0)
+            return player_data.get('achievements',{}).get('bedwars_level',0)
 
         def resources_collected(player_data):
-            bedwars = player_data.get('stats').get('Bedwars')
+            bedwars = player_data.get('stats',{}).get('Bedwars',{})
             return {
                 'iron':bedwars.get('iron_resources_collected_bedwars',0),
                 'gold':bedwars.get('gold_resources_collected_bedwars',0),
@@ -86,25 +85,25 @@ class Player:
                 }
 
         def beds_broken(player_data):
-            return player_data.get('stats').get('Bedwars').get('beds_broken_bedwars',0)
+            return player_data.get('stats',{}).get('Bedwars',{}).get('beds_broken_bedwars',0)
 
         def beds_lost(player_data):
-            return player_data.get('stats').get('Bedwars').get('beds_lost_bedwars',0)
+            return player_data.get('stats',{}).get('Bedwars',{}).get('beds_lost_bedwars',0)
 
         def final_kills(player_data):
-            return player_data.get('stats').get('Bedwars').get('final_kills_bedwars',0)
+            return player_data.get('stats',{}).get('Bedwars',{}).get('final_kills_bedwars',0)
 
         def final_deaths(player_data):
-            return player_data.get('stats').get('Bedwars').get('final_deaths_bedwars',0)
+            return player_data.get('stats',{}).get('Bedwars',{}).get('final_deaths_bedwars',0)
 
         def wins(player_data):
-            return player_data.get('stats').get('Bedwars').get('wins_bedwars',0)
+            return player_data.get('stats',{}).get('Bedwars',{}).get('wins_bedwars',0)
 
         def losses(player_data):
-            return player_data.get('stats').get('Bedwars').get('losses_bedwars',0)
+            return player_data.get('stats',{}).get('Bedwars',{}).get('losses_bedwars',0)
 
         def winstreak(player_data):
-            return player_data.get('stats').get('Bedwars').get('winstreak',0)
+            return player_data.get('stats',{}).get('Bedwars',{}).get('winstreak',0)
 
         # math
         def bed_break_loss_ratio(player_data):
@@ -135,25 +134,25 @@ class Player:
         class Solo:
             # api
             def beds_broken(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_one_beds_broken_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_one_beds_broken_bedwars',0)
 
             def beds_lost(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_one_beds_lost_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_one_beds_lost_bedwars',0)
 
             def final_kills(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_one_final_kills_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_one_final_kills_bedwars',0)
 
             def final_deaths(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_one_final_deaths_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_one_final_deaths_bedwars',0)
 
             def wins(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_one_wins_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_one_wins_bedwars',0)
 
             def losses(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_one_losses_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_one_losses_bedwars',0)
 
             def winstreak(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_one_winstreak',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_one_winstreak',0)
 
             # math
             def bed_break_loss_ratio(player_data):
@@ -182,27 +181,26 @@ class Player:
 
 
         class Doubles:
-            # api
             def beds_broken(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_two_beds_broken_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_two_beds_broken_bedwars',0)
 
             def beds_lost(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_two_beds_lost_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_two_beds_lost_bedwars',0)
 
             def final_kills(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_two_final_kills_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_two_final_kills_bedwars',0)
 
             def final_deaths(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_two_final_deaths_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_two_final_deaths_bedwars',0)
 
             def wins(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_two_wins_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_two_wins_bedwars',0)
 
             def losses(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_two_losses_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_two_losses_bedwars',0)
 
             def winstreak(player_data):
-                return player_data.get('stats').get('Bedwars').get('eight_two_winstreak',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('eight_two_winstreak',0)
 
             # math
             def bed_break_loss_ratio(player_data):
@@ -231,27 +229,26 @@ class Player:
 
 
         class Threes:
-            # api
             def beds_broken(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_three_beds_broken_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_three_beds_broken_bedwars',0)
 
             def beds_lost(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_three_beds_lost_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_three_beds_lost_bedwars',0)
 
             def final_kills(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_three_final_kills_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_three_final_kills_bedwars',0)
 
             def final_deaths(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_three_final_deaths_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_three_final_deaths_bedwars',0)
 
             def wins(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_three_wins_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_three_wins_bedwars',0)
 
             def losses(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_three_losses_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_three_losses_bedwars',0)
 
             def winstreak(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_three_winstreak',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_three_winstreak',0)
 
             # math
             def bed_break_loss_ratio(player_data):
@@ -280,27 +277,26 @@ class Player:
 
 
         class Fours:
-            # api
             def beds_broken(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_four_beds_broken_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_four_beds_broken_bedwars',0)
 
             def beds_lost(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_four_beds_lost_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_four_beds_lost_bedwars',0)
 
             def final_kills(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_four_final_kills_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_four_final_kills_bedwars',0)
 
             def final_deaths(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_four_final_deaths_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_four_final_deaths_bedwars',0)
 
             def wins(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_four_wins_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_four_wins_bedwars',0)
 
             def losses(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_four_losses_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_four_losses_bedwars',0)
 
             def winstreak(player_data):
-                return player_data.get('stats').get('Bedwars').get('four_four_winstreak',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('four_four_winstreak',0)
 
             # math
             def bed_break_loss_ratio(player_data):
@@ -329,27 +325,26 @@ class Player:
 
 
         class Teams:
-            # api
             def beds_broken(player_data):
-                return player_data.get('stats').get('Bedwars').get('two_four_beds_broken_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('two_four_beds_broken_bedwars',0)
 
             def beds_lost(player_data):
-                return player_data.get('stats').get('Bedwars').get('two_four_beds_lost_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('two_four_beds_lost_bedwars',0)
 
             def final_kills(player_data):
-                return player_data.get('stats').get('Bedwars').get('two_four_final_kills_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('two_four_final_kills_bedwars',0)
 
             def final_deaths(player_data):
-                return player_data.get('stats').get('Bedwars').get('two_four_final_deaths_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('two_four_final_deaths_bedwars',0)
 
             def wins(player_data):
-                return player_data.get('stats').get('Bedwars').get('two_four_wins_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('two_four_wins_bedwars',0)
 
             def losses(player_data):
-                return player_data.get('stats').get('Bedwars').get('two_four_losses_bedwars',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('two_four_losses_bedwars',0)
 
             def winstreak(player_data):
-                return player_data.get('stats').get('Bedwars').get('two_four_winstreak',0)
+                return player_data.get('stats',{}).get('Bedwars',{}).get('two_four_winstreak',0)
 
             # math
             def bed_break_loss_ratio(player_data):
