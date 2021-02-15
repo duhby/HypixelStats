@@ -4,3 +4,4 @@ rate: 120 # api requests allowed per minute
 admins:
     - FatDubs
     - gamerboy80
+    - _stats
