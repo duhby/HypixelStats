@@ -16,7 +16,7 @@ logging.basicConfig(
     ]
 )
 
-api_timeout = 4 # in seconds
+api_timeout = 10 # in seconds
 
 def getUUID(user):
     try:
@@ -25,7 +25,7 @@ def getUUID(user):
             return response["id"]
         else:
             return None
-    except requests.exceptions.Timeout:
+    except:
         logging.error("API Timeout! (mojang)")
     
     return None
