@@ -56,7 +56,7 @@ def isFriended(username,bot):
 def canMsg(username,bot):
     apikey = nextKey()
     try:
-        response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout).json()
+        response = requests.get(f"https://api.hypixel.net/player?key={apikey}&uuid={mojangapi.getUUID(username)}",timeout=api_timeout).json()
     except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
         return False
@@ -83,7 +83,7 @@ def canMsg(username,bot):
 def getPlayer(username,mode):
     apikey = nextKey()
     try:
-        response = requests.get(f"https://api.hypixel.net/player?key={apikey}&name={username}",timeout=api_timeout)
+        response = requests.get(f"https://api.hypixel.net/player?key={apikey}&uuid={mojangapi.getUUID(username)}",timeout=api_timeout)
     except requests.exceptions.Timeout:
         logging.error("API Timeout! (hypixel)")
         return {}
