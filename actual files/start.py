@@ -2,10 +2,10 @@
 import main     # main project file
 import getpass  # allows password to be hidden during input
 
-email = input('email: ')
-password = getpass.getpass('password: ')
-username = input('bot ign: ')
-rate = input('rate (msgs per minute): ')
+email = "email"
+password = "password"
+username = "ign"
+rate = "25"
 
 bot = main.thread(email,password,username,rate)
 bot.start()
