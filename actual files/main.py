@@ -85,15 +85,19 @@ class utils:
         if key in dic:    dic[key] += n
         else:             dic[key]  = n
 
-    # saves a pkl file
-    def save_obj(obj, name):
-        with open('obj/'+ name + '.pkl', 'wb') as f:
-            pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+    # saves a json file
+    def save_obj(data, name):
+        data = json.dumps(data)
+        data = json.loads(data)
+        with open('obj/' + name + '.json', 'w') as file:
+            json.dump(data, 'obj/' + name + '.json')
 
-    # loads a pkl file
+    # loads a json file
     def load_obj(name):
-        with open('obj/' + name + '.pkl', 'rb') as f:
-            return pickle.load(f)
+        with open('obj/' + name + '.json', 'r') as file:
+            data = json.load(file)
+        return data
+
 
     class multithreading:
         def __init__(self,users,mode):
@@ -152,7 +156,7 @@ class bot:
         self.inQueue = False     # returns a boolean if the bot is in queue
         self.leader_buffer = ""  # holds the buffer for the leader of the party
         self.mods_buffer = []    # holds the buffer for the moderators of the party
-        self.ops = ["FatDubs","gamerboy80"]  # holds the data for operators of the bot (case sensitive)
+        self.ops = ["duhby","gamerboy80"]  # holds the data for operators of the bot (case sensitive)
         self.quota = utils.load_obj("quota") # holds the amount of unique users and requests each user has
         self.quotaChange = {} # temporarily holds quota data to get added to self.quota during a hb
         topusers = {k: v for k, v in sorted(self.quota.items(), key=lambda item: item[1], reverse=True)}
@@ -251,12 +255,12 @@ class bot:
 
                 # on party leader return
                 elif "Party Leader" in chat_raw and "●" in chat_raw:
-                    # msg = Party Leader: [MVP+] FatDubs ●
+                    # msg = Party Leader: [MVP+] duhby ●
                     leader = msg[msg.index(":")+1:].split("●") # retreive player
                     leader = leader[0].split()[-1] # remove rank
                     self.leader_buffer = leader
                     self.mods_buffer = []
-                    # leader = 'FatDubs'
+                    # leader = 'duhby'
 
                 # on party moderator list return
                 elif "Party Moderators" in chat_raw and "●" in chat_raw:
@@ -324,14 +328,14 @@ class bot:
             logging.warning("Chat handle error! " + str(error))
 
     def chat_msg(self,msg):
-        # >>> msg = 'From [MVP+] FatDubs: FatDubs tkr'
+        # >>> msg = 'From [MVP+] duhby: duhby tkr'
         msg = utils.clean_msg(msg)
         user = msg[:msg.index(":")].split()[-1]
         args = msg[msg.index(":")+1:].split()
         args = [i.lower() for i in args] # converts list to lowercase
 
-        # user = 'FatDubs'
-        # args = ['fatdubs', 'tkr']
+        # user = 'duhby'
+        # args = ['duhby', 'tkr']
 
         if args == []:
             self.msgQueue = [{"msgMode":"wrong_syntax","user":user}] + self.msgQueue
@@ -409,15 +413,15 @@ class bot:
         elif "pit" in args[-1:]:
             mode = "pit"
             del args[-1]
-        elif "overall" in args[-1]:
+        elif "overall" in args[-1] or "oa" in args[-1]:
             mode = "oa"
             del args[-1]
 
         if len(args) == 0:
             args = [user.lower()]
 
-        # user = 'FatDubs'
-        # args = ['fatdubs']
+        # user = 'duhby'
+        # args = ['duhby']
         # mode = 'tkr'
 
         if self.cooldowncheck(user,1): return # cooldown
@@ -432,9 +436,9 @@ class bot:
             if cmd == "+send" and user in self.ops:
                 self.commandQueue.append({"command":"send_command","send":" ".join(args[1:])})
 
-            elif cmd in ["+c","+check"] and length == 2:
-                data = minzaapi.isSniper(args[-1])
-                self.msgQueue = [{"msgMode":"sniper","user":user,"player":args[-1],"data":data}] + self.msgQueue
+            #elif cmd in ["+c","+check"] and length == 2:
+            #    data = minzaapi.isSniper(args[-1])
+            #    self.msgQueue = [{"msgMode":"sniper","user":user,"player":args[-1],"data":data}] + self.msgQueue
 
             elif cmd in ["+reset","+resetmode"]:
                 try: del self.msg_config[user]
@@ -522,7 +526,7 @@ class bot:
                 if replyTo in self.msg_config and mode == "":
                     mode = self.msg_config[replyTo]
                 elif mode == "":
-                    mode = "oa"
+                    mode = "bw0"
                 utils.increment_dict(self.quotaChange,replyTo,1)
                 data = hypixelapi.getPlayer(username,mode)
                 raw = hypixelapi.convert(data,mode)
@@ -535,14 +539,16 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this."),0.4)
                 else:
-                    if hypixelapi.canMsg(replyTo,self.username):
-                        logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
-                        self.chat(f"/msg {replyTo} {msg}",0.4)
-                    else:
-                        logging.info(f"Couldn't reply to {replyTo}")
-                        self.msgError.append(replyTo)
+                    logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
+                    self.chat(f"/msg {replyTo} {msg}",0.4)
+                    # if hypixelapi.canMsg(replyTo,self.username):
+                    #     logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
+                    #     self.chat(f"/msg {replyTo} {msg}",0.4)
+                    # else:
+                    #     logging.info(f"Couldn't reply to {replyTo}")
+                    #     self.msgError.append(replyTo)
                 self.currentChannel = ""
 
             elif currentQueue["msgMode"] == "guild":
@@ -565,14 +571,16 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this."),0.4)
                 else:
-                    if hypixelapi.canMsg(replyTo,self.username):
-                        logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
-                        self.chat(f"/msg {replyTo} {msg}",0.4)
-                    else:
-                        logging.info(f"Couldn't reply to {replyTo}")
-                        self.msgError.append(replyTo)
+                    logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
+                    self.chat(f"/msg {replyTo} {msg}",0.4)
+                    # if hypixelapi.canMsg(replyTo,self.username):
+                    #     logging.info(f"{msgformat.displaymode(mode)} Stats: {replyTo} --> {username}")
+                    #     self.chat(f"/msg {replyTo} {msg}",0.4)
+                    # else:
+                    #     logging.info(f"Couldn't reply to {replyTo}")
+                    #     self.msgError.append(replyTo)
                 self.currentChannel = ""
 
             elif currentQueue["msgMode"] == "stats_multiple":
@@ -585,7 +593,7 @@ class bot:
                 if replyTo in self.msg_config and mode == "":
                     mode = self.msg_config[replyTo]
                 elif mode == "":
-                    mode = "oa"
+                    mode = "bw0"
                 utils.increment_dict(self.quotaChange,replyTo,len(usernames))
                 handle = utils.multithreading(usernames,mode)
                 handle.start()
@@ -601,14 +609,16 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this."),0.4)
                 else:
-                    if hypixelapi.canMsg(replyTo,self.username):
-                        logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
-                        for msg in msgs: self.chat(msg,0.4)
-                    else:
-                        logging.info(f"Couldn't reply to {replyTo}")
-                        self.msgError.append(replyTo)
+                    logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
+                    for msg in msgs: self.chat(msg,0.4)
+                    # if hypixelapi.canMsg(replyTo,self.username):
+                    #     logging.info(f"{msgformat.displaymode(mode)} Stats Multiple: {replyTo} --> {usernames}")
+                    #     for msg in msgs: self.chat(msg,0.4)
+                    # else:
+                    #     logging.info(f"Couldn't reply to {replyTo}")
+                    #     self.msgError.append(replyTo)
                 self.currentChannel = ""
 
             elif currentQueue["msgMode"] == "discord_request":
@@ -635,14 +645,16 @@ class bot:
                         logging.info(f"{replyTo} --> Friend Warning")
                         self.msgError.remove(replyTo)
                         while time.time() - self.command_delay < 0.7: time.sleep(0.05)
-                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this.",0.4))
+                        self.chat(msgformat.insertInvis("I couldn't reply to you earlier, make sure to friend me or set msgpolicy to none to prevent this."),0.4)
                 else:
-                    if hypixelapi.canMsg(replyTo,self.username):
-                        logging.info(f"Sniper Check: {user} --> {player}")
-                        self.chat(f"/msg {replyTo} {msg}",0.4)
-                    else:
-                        logging.info(f"Couldn't reply to {replyTo}")
-                        self.msgError.append(replyTo)
+                    logging.info(f"Sniper Check: {user} --> {player}")
+                    self.chat(f"/msg {replyTo} {msg}",0.4)
+                    # if hypixelapi.canMsg(replyTo,self.username):
+                    #     logging.info(f"Sniper Check: {user} --> {player}")
+                    #     self.chat(f"/msg {replyTo} {msg}",0.4)
+                    # else:
+                    #     logging.info(f"Couldn't reply to {replyTo}")
+                    #     self.msgError.append(replyTo)
                 self.currentChannel = ""
 
             elif currentQueue["msgMode"] == "wrong_syntax":
@@ -670,7 +682,7 @@ class bot:
                     logging.info(f"Party Mode: {currentQueue['user']} --> {currentQueue['mode']}")
                 while time.time()-self.command_delay < 0.5: time.sleep(0.05)
                 self.chat("/r " + msgformat.party_mode(currentQueue["mode"]),0.5)
-            
+
             elif currentQueue["msgMode"] == "settings":
                 logging.info(f"Settings: {currentQueue['user']}")
                 party = currentQueue["confs"]["party"]
@@ -688,7 +700,8 @@ class bot:
                 self.partyQueue.append(currentQueue)
             else:
                 if currentQueue["mode"] == "queue":
-                    self.inParty = {"in":True,"from":currentQueue["user"]}
+                    self.inParty["in"] = True
+                    self.inParty["from"] = currentQueue["user"]
                     logging.info(f"Party Accepted - {self.inParty['from']}")
                     utils.increment_dict(self.quotaChange,self.inParty["from"],1)
                     while time.time()-self.command_delay < 0.5: time.sleep(0.05)
@@ -701,22 +714,24 @@ class bot:
                         if self.inParty["from"] in self.party_config:
                             mode = self.party_config[self.inParty["from"]]
                         else:
-                            mode = "oa"
+                            mode = "bw0"
                         handle = utils.multithreading(users,mode)
                         handle.start()
                         raws = [handle.output[x] for x in list(handle.output)]
                         msgs = msgformat.party(raws,mode)
                         while time.time()-self.command_delay < 0.3: time.sleep(0.05)
-                        for msg in msgs: self.chat_party(f"/pchat {msg}",0.3)
+                        self.chat_party(f"/chat p",0.3)
+                        for msg in msgs: self.chat_party(f"{msg}",0.3)
                     else:
                         while time.time()-self.command_delay < 0.3: time.sleep(0.05)
-                        self.chat_party("/pchat " + msgformat.party_too_large(),0.3)
+                        self.chat_party(f"/chat p",0.3)
+                        self.chat_party(msgformat.party_too_large(),0.3)
                     while time.time()-self.command_delay < 1:
                         self.msg_tick()
                         time.sleep(0.05)
                     self.chat("/p leave")
                     self.inParty["in"] = False
-        if self.inParty["in"] and time.time()-self.inParty["timestamp"] > 4:
+        if self.inParty["in"] and time.time()-self.inParty["timestamp"] > 6:
             logging.info("Party timeout! " + str(self.inParty["from"]))
             while time.time()-self.command_delay < 0.8: time.sleep(0.05)
             self.chat("/p leave",0.3)
@@ -793,16 +808,24 @@ class thread:
         self.username = username
         self.rate     = int(rate)
 
-    def start(self):
+    def initialize(self):
         self.bot = bot(self.email,self.password,self.username,self.rate)
         self.bot.initialize()
+
+    def start(self):
+        self.initialize()
         while True:
-            time.sleep(0.05)
-            self.bot.tick()
-            if self.bot.muted:
-                if int(self.bot.unmute_time-time.time()) > 0:
-                    if time.time() - self.mutedelay >= 360:
-                        self.mutedelay = time.time()
-                        logging.critical("Muted: " + str(self.bot.mute_duration))
-                else:
-                    self.muted = self.bot.muted = False
+            try:
+                time.sleep(0.05)
+                self.bot.tick()
+                if self.bot.muted:
+                    if int(self.bot.unmute_time-time.time()) > 0:
+                        if time.time() - self.mutedelay >= 360:
+                            self.mutedelay = time.time()
+                            logging.critical("Muted: " + str(self.bot.mute_duration))
+                    else:
+                        self.muted = self.bot.muted = False
+            except Exception as error:
+                logging.error(f"Unknown error! {error}")
+                time.sleep(5)
+                self.initialize()
